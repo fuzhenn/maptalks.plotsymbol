@@ -1,0 +1,44 @@
+{
+  "name": "maptalks.plotsymbol",
+  "version": "0.1.0",
+  "description": "A maptalks.js plugins for ploting symbols.",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/maptalks/maptalks.plotsymbol.git"
+  },
+  "main": "dist/maptalks.plotsymbol.js",
+  "scripts": {
+    "lint": "eslint index.js test/**/*.js",
+    "test": "gulp test",
+    "pretest": "npm run lint",
+    "build": "browserify --external maptalks index.js > dist/maptalks.plotsymbol.js"
+  },
+  "browserify": {
+    "transform": [
+      "browserify-shim"
+    ]
+  },
+  "browserify-shim": {
+    "maptalks": "global:maptalks"
+  },
+  "devDependencies": {
+    "eslint": "^2.4.0",
+    "eslint-config-maptalks": "^0.2.1",
+    "expect.js": "^0.3.1",
+    "gulp": "^3.9.0",
+    "gulp-gzip": "^1.2.0",
+    "gulp-mocha": "^2.2.0",
+    "gulp-rename": "~1.2.2",
+    "gulp-uglify": "^1.5.1",
+    "mocha": "^2.4.5",
+    "browserify": "^13.1.1",
+    "browserify-shim": "^3.8.12",
+    "vinyl-source-stream": "^1.1.0",
+    "vinyl-buffer": "^1.0.0",
+    "gulp-header": "^1.8.8"
+  },
+  "peerDependencies": {
+    "maptalks": "<2.0.0"
+  }
+}
