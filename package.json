@@ -40,5 +40,8 @@
   },
   "peerDependencies": {
     "maptalks": "<2.0.0"
+  },
+  "dependencies": {
+    "point-geometry": "^0.1.0"
   }
 }

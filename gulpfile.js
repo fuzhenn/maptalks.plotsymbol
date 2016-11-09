@@ -8,7 +8,7 @@ var buffer = require('vinyl-buffer');
 var version = require('./package.json').version;
 
 gulp.task('watch', ['build'], function () {
-   var scriptWatcher = gulp.watch(['index.js', './gulpfile.js'], ['build']); // watch the same files in our scripts task
+   var scriptWatcher = gulp.watch(['src/**/*', './gulpfile.js'], ['build']); // watch the same files in our scripts task
 });
 
 // ref:
