@@ -19,20 +19,18 @@ var PlotUtils = require('./PlotUtils');
  *         [121.47869117980943,31.211916269810335]
  *     ],
  *     {
- *         curveType : 1,
- *         arcDegree : 120,
  *         symbol : {
  *             'lineWidth' : 5
  *         }
  *     }
  * ).addTo(layer);
  */
-var StraightArrow = module.exports = maptalks.CurveLine.extend(/** @lends maptalks.StraightArrow.prototype */{
+var StraightArrow = module.exports = maptalks.Curve.extend(/** @lends maptalks.StraightArrow.prototype */{
     /**
      * @property {Object} options
      */
     options:{
-        'widthRatio' : 0.2,
+        'widthRatio' : 0.10,
         'arrowStyle' : []
     },
 
@@ -45,7 +43,9 @@ var StraightArrow = module.exports = maptalks.CurveLine.extend(/** @lends maptal
 
     _getPaintParams: function () {
         var points = this._getPath2DPoints(this._getPrjCoordinates());
-
+        if (points.length <= 1) {
+            return null;
+        }
         var length = this._get2DLength();
         var lineWidth = length * this.options['widthRatio'];
 
@@ -69,19 +69,26 @@ var StraightArrow = module.exports = maptalks.CurveLine.extend(/** @lends maptal
         ctx.beginPath();
         var l = segs[0];
         var seg;
+        //draw body upside
         var i = 0;
         ctx.moveTo(points[0].x, points[0].y);
         seg = points.slice(0, segs[0]);
         this._quadraticCurve(ctx, seg);
+        //draw head
         i += segs[0];
         maptalks.Canvas._path(ctx, points.slice(i, i + segs[1]), lineDasharray, lineOpacity);
+        //draw body downside
         i += segs[1];
         ctx.lineTo(points[i].x, points[i].y);
         seg = points.slice(i, i + segs[2]);
         this._quadraticCurve(ctx, seg);
-        ctx.closePath();
+        this._closeArrow(ctx, points[points.length - 1], points[0]);
         maptalks.Canvas._stroke(ctx, lineOpacity);
         maptalks.Canvas.fillCanvas(ctx, fillOpacity, points[0].x, points[0].y);
+    },
+
+    _closeArrow: function (ctx) {
+        ctx.closePath();
     },
 
     /**
@@ -92,14 +99,17 @@ var StraightArrow = module.exports = maptalks.CurveLine.extend(/** @lends maptal
      * @param  {Number} lineWidth         - line width
      * @return {maptalks.Coordinate[]}
      */
-    _getArrowHead: function (h1, h2, vertex, lineWidth) {
+    _getArrowHead: function (h1, h2, vertex, lineWidth, hScale) {
+        if (!hScale) {
+            hScale = 1;
+        }
         h1 = new Point(h1.x, h1.y);
         h2 = new Point(h2.x, h2.y);
         var normal = h1.sub(h2)._unit();
         var head0 = vertex.add(lineWidth * normal.x, lineWidth * normal.y);
         var head2 = vertex.add(lineWidth * -normal.x, lineWidth * -normal.y);
         normal._perp()._mult(-1);
-        var head1 = vertex.add(lineWidth * normal.x, lineWidth * normal.y);
+        var head1 = vertex.add(hScale * lineWidth * normal.x, hScale * lineWidth * normal.y);
         return [head0, head1, head2]
     }
 
@@ -107,8 +117,20 @@ var StraightArrow = module.exports = maptalks.CurveLine.extend(/** @lends maptal
 
 StraightArrow.fromJSON = function (json) {
     var feature = json['feature'];
-    var StraightArrow = new Z.StraightArrow(feature['geometry']['coordinates'], json['options']);
+    var StraightArrow = new maptalks.StraightArrow(feature['geometry']['coordinates'], json['options']);
     StraightArrow.setProperties(feature['properties']);
     return StraightArrow;
 };
 
+maptalks.DrawTool.registerMode('StraightArrow', {
+    'action' : 'clickDblclick',
+    'create' : function (path) {
+        return new maptalks.StraightArrow(path);
+    },
+    'update' : function (path, geometry) {
+        geometry.setCoordinates(path);
+    },
+    'generate' : function (geometry) {
+        return geometry;
+    }
+});

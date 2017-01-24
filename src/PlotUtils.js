@@ -8,10 +8,14 @@ module.exports = {
      * Get arrow body for given vertexes.
      * @param  {maptalks.Coordinate[]} vertexes    - input vertexes
      * @param  {[type]} lineWidth [description]
+     * @param  {[type]} map       [description]
+     * @param  {[type]} ratio     [description]
      * @return {[type]}           [description]
      */
-    getArrowBody: function (vertexes, lineWidth, map) {
+    getArrowBody: function (vertexes, lineWidth, map, ratio, arrowLength) {
         lineWidth /= 2;
+        var arrowWidth;
+        var currentLen = 0;
         var upPlots = [],
             downPlots = [],
             pair;
@@ -21,6 +25,13 @@ module.exports = {
         for (var i = 1, l = vertexes.length; i < l; i++) {
             current = new Point(vertexes[i].x, vertexes[i].y);
             prev = new Point(vertexes[i - 1].x, vertexes[i - 1].y);
+            if (ratio && arrowLength) {
+                currentLen += current.dist(prev);
+                arrowWidth = (1 - (1 - ratio) * currentLen / arrowLength) * lineWidth;
+            } else {
+                arrowWidth = lineWidth;
+            }
+
             if (i < l - 1) {
                 next = new Point(vertexes[i + 1].x, vertexes[i + 1].y);
             } else {
@@ -38,7 +49,7 @@ module.exports = {
             } else {
                 currentNormal = normal;
             }
-            pair = this._getPlotPair(vertexes[i], currentNormal, lineWidth, map);
+            pair = this._getPlotPair(vertexes[i], currentNormal, arrowWidth, map);
             upPlots.push(pair[0]);
             downPlots.push(pair[1]);
         }
