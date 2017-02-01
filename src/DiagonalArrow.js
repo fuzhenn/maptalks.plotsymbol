@@ -1,9 +1,14 @@
-'use strict';
+import * as maptalks from 'maptalks';
+import PlotUtils from './PlotUtils';
+import StraightArrow from './StraightArrow';
 
-var maptalks = require('maptalks');
-var Point = require('point-geometry');
-var PlotUtils = require('./PlotUtils');
-var StraightArrow = require('./StraightArrow');
+/**
+ * @property {Object} options
+ */
+const options = {
+    'widthRatio' : 0.20,
+    'arrowStyle' : []
+};
 
 /**
  * @classdesc Curve style LineString
@@ -26,59 +31,56 @@ var StraightArrow = require('./StraightArrow');
  *     }
  * ).addTo(layer);
  */
-var DiagonalArrow = module.exports = maptalks.StraightArrow.extend(/** @lends maptalks.DiagonalArrow.prototype */{
-    /**
-     * @property {Object} options
-     */
-    options:{
-        'widthRatio' : 0.20,
-        'arrowStyle' : []
-    },
+export default class DiagonalArrow extends StraightArrow {
 
-    _toJSON:function (options) {
+    static fromJSON(json) {
+        const feature = json['feature'];
+        const arrow = new DiagonalArrow(feature['geometry']['coordinates'], json['options']);
+        arrow.setProperties(feature['properties']);
+        return arrow;
+    }
+
+    _toJSON(options) {
         return {
             'feature' : this.toGeoJSON(options),
             'subType' : 'DiagonalArrow'
         };
-    },
+    }
 
-    _getPaintParams: function () {
-        var points = this._getPath2DPoints(this._getPrjCoordinates());
+    _getPaintParams() {
+        const points = this._getPath2DPoints(this._getPrjCoordinates());
         if (points.length <= 1) {
             return null;
         }
-        var length = this._get2DLength();
-        var lineWidth = length * this.options['widthRatio'];
+        const zoomScale = this.getMap().getScale();
+        const length = this._get2DLength();
+        const lineWidth = length * this.options['widthRatio'];
 
-        var arrowPairs = PlotUtils.getArrowBody(points, lineWidth, this.getMap(), 0.15, length);
-        var h1 = arrowPairs[0][arrowPairs[0].length - 1],
+        const arrowPairs = PlotUtils.getArrowBody(points, lineWidth, this.getMap(), 0.15, length);
+        const h1 = arrowPairs[0][arrowPairs[0].length - 1],
             h2 = arrowPairs[1][arrowPairs[1].length - 1];
-        var arrowHead = this._getArrowHead(h1, h2, points[points.length - 1], lineWidth * 0.3, 2);
-        var t1 = arrowPairs[0][0],
-            t2 = arrowPairs[1][0];
+        const arrowHead = this._getArrowHead(h1, h2, points[points.length - 1], lineWidth * 0.3, 2);
         var plots = [];
         plots.push.apply(plots, arrowPairs[0]);
         plots.push.apply(plots, arrowHead);
-        for (var i = arrowPairs[1].length - 1; i >= 0; i--) {
+        for (let i = arrowPairs[1].length - 1; i >= 0; i--) {
             plots.push(arrowPairs[1][i]);
         }
-        // arrowPairs.push(arrowHead);
+        // convert to point in maxZoom
+        plots = plots.map(p => p.multi(zoomScale));
         return [plots, [arrowPairs[0].length, arrowHead.length, arrowPairs[1].length]];
     }
 
-});
+}
 
-DiagonalArrow.fromJSON = function (json) {
-    var feature = json['feature'];
-    var arrow = new maptalks.DiagonalArrow(feature['geometry']['coordinates'], json['options']);
-    arrow.setProperties(feature['properties']);
-    return arrow;
-};
+DiagonalArrow.mergeOptions(options);
+
+DiagonalArrow.registerJSONType('DiagonalArrow');
 
 maptalks.DrawTool.registerMode('DiagonalArrow', {
     'action' : 'clickDblclick',
     'create' : function (path) {
-        return new maptalks.DiagonalArrow(path);
+        return new DiagonalArrow(path);
     },
     'update' : function (path, geometry) {
         geometry.setCoordinates(path);

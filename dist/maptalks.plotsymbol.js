@@ -1,19 +1,15 @@
-//version:0.1.0
-(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
-(function (global){
-'use strict';
+/*!
+ * maptalks.plotsymbol v0.1.0
+ * LICENSE : MIT
+ * (c) 2016-2017 maptalks.org
+ */
+(function (global, factory) {
+	typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('maptalks')) :
+	typeof define === 'function' && define.amd ? define(['exports', 'maptalks'], factory) :
+	(factory((global.maptalks = global.maptalks || {}),global.maptalks));
+}(this, (function (exports,maptalks) { 'use strict';
 
-var maptalks = (typeof window !== "undefined" ? window['maptalks'] : typeof global !== "undefined" ? global['maptalks'] : null);
-
-maptalks.StraightArrow = require('./src/StraightArrow');
-maptalks.DiagonalArrow = require('./src/DiagonalArrow');
-maptalks.DoveTailDiagonalArrow = require('./src/DoveTailDiagonalArrow');
-
-}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./src/DiagonalArrow":3,"./src/DoveTailDiagonalArrow":4,"./src/StraightArrow":6}],2:[function(require,module,exports){
-'use strict';
-
-module.exports = Point;
+var index = Point;
 
 /**
  * A standalone point geometry with useful accessor, comparison, and
@@ -39,7 +35,9 @@ Point.prototype = {
      * without affecting the old one.
      * @return {Point} the clone
      */
-    clone: function() { return new Point(this.x, this.y); },
+    clone: function clone() {
+        return new Point(this.x, this.y);
+    },
 
     /**
      * Add this point's x & y coordinates to another point,
@@ -47,7 +45,9 @@ Point.prototype = {
      * @param {Point} p the other point
      * @return {Point} output point
      */
-    add:     function(p) { return this.clone()._add(p); },
+    add: function add(p) {
+        return this.clone()._add(p);
+    },
 
     /**
      * Subtract this point's x & y coordinates to from point,
@@ -55,7 +55,9 @@ Point.prototype = {
      * @param {Point} p the other point
      * @return {Point} output point
      */
-    sub:     function(p) { return this.clone()._sub(p); },
+    sub: function sub(p) {
+        return this.clone()._sub(p);
+    },
 
     /**
      * Multiply this point's x & y coordinates by point,
@@ -63,7 +65,9 @@ Point.prototype = {
      * @param {Point} p the other point
      * @return {Point} output point
      */
-    multByPoint:    function(p) { return this.clone()._multByPoint(p); },
+    multByPoint: function multByPoint(p) {
+        return this.clone()._multByPoint(p);
+    },
 
     /**
      * Divide this point's x & y coordinates by point,
@@ -71,7 +75,9 @@ Point.prototype = {
      * @param {Point} p the other point
      * @return {Point} output point
      */
-    divByPoint:     function(p) { return this.clone()._divByPoint(p); },
+    divByPoint: function divByPoint(p) {
+        return this.clone()._divByPoint(p);
+    },
 
     /**
      * Multiply this point's x & y coordinates by a factor,
@@ -79,7 +85,9 @@ Point.prototype = {
      * @param {Point} k factor
      * @return {Point} output point
      */
-    mult:    function(k) { return this.clone()._mult(k); },
+    mult: function mult(k) {
+        return this.clone()._mult(k);
+    },
 
     /**
      * Divide this point's x & y coordinates by a factor,
@@ -87,7 +95,9 @@ Point.prototype = {
      * @param {Point} k factor
      * @return {Point} output point
      */
-    div:     function(k) { return this.clone()._div(k); },
+    div: function div(k) {
+        return this.clone()._div(k);
+    },
 
     /**
      * Rotate this point around the 0, 0 origin by an angle a,
@@ -95,7 +105,9 @@ Point.prototype = {
      * @param {Number} a angle to rotate around, in radians
      * @return {Point} output point
      */
-    rotate:  function(a) { return this.clone()._rotate(a); },
+    rotate: function rotate(a) {
+        return this.clone()._rotate(a);
+    },
 
     /**
      * Rotate this point around p point by an angle a,
@@ -104,14 +116,18 @@ Point.prototype = {
      * @param {Point} p Point to rotate around
      * @return {Point} output point
      */
-    rotateAround:  function(a,p) { return this.clone()._rotateAround(a,p); },
+    rotateAround: function rotateAround(a, p) {
+        return this.clone()._rotateAround(a, p);
+    },
 
     /**
      * Multiply this point by a 4x1 transformation matrix
      * @param {Array<Number>} m transformation matrix
      * @return {Point} output point
      */
-    matMult: function(m) { return this.clone()._matMult(m); },
+    matMult: function matMult(m) {
+        return this.clone()._matMult(m);
+    },
 
     /**
      * Calculate this point but as a unit vector from 0, 0, meaning
@@ -120,7 +136,9 @@ Point.prototype = {
      * point to the 0, 0 coordinate will be the same as before.
      * @return {Point} unit vector point
      */
-    unit:    function() { return this.clone()._unit(); },
+    unit: function unit() {
+        return this.clone()._unit();
+    },
 
     /**
      * Compute a perpendicular point, where the new y coordinate
@@ -128,14 +146,18 @@ Point.prototype = {
      * coordinate multiplied by -1
      * @return {Point} perpendicular point
      */
-    perp:    function() { return this.clone()._perp(); },
+    perp: function perp() {
+        return this.clone()._perp();
+    },
 
     /**
      * Return a version of this point with the x & y coordinates
      * rounded to integers.
      * @return {Point} rounded point
      */
-    round:   function() { return this.clone()._round(); },
+    round: function round() {
+        return this.clone()._round();
+    },
 
     /**
      * Return the magitude of this point: this is the Euclidean
@@ -143,7 +165,7 @@ Point.prototype = {
      * coordinates.
      * @return {Number} magnitude
      */
-    mag: function() {
+    mag: function mag() {
         return Math.sqrt(this.x * this.x + this.y * this.y);
     },
 
@@ -153,9 +175,8 @@ Point.prototype = {
      * @param {Point} other the other point
      * @return {boolean} whether the points are equal
      */
-    equals: function(other) {
-        return this.x === other.x &&
-               this.y === other.y;
+    equals: function equals(other) {
+        return this.x === other.x && this.y === other.y;
     },
 
     /**
@@ -163,7 +184,7 @@ Point.prototype = {
      * @param {Point} p the other point
      * @return {Number} distance
      */
-    dist: function(p) {
+    dist: function dist(p) {
         return Math.sqrt(this.distSqr(p));
     },
 
@@ -174,7 +195,7 @@ Point.prototype = {
      * @param {Point} p the other point
      * @return {Number} distance
      */
-    distSqr: function(p) {
+    distSqr: function distSqr(p) {
         var dx = p.x - this.x,
             dy = p.y - this.y;
         return dx * dx + dy * dy;
@@ -185,7 +206,7 @@ Point.prototype = {
      * coordinates.
      * @return {Number} angle
      */
-    angle: function() {
+    angle: function angle() {
         return Math.atan2(this.y, this.x);
     },
 
@@ -194,7 +215,7 @@ Point.prototype = {
      * @param {Point} b the other point
      * @return {Number} angle
      */
-    angleTo: function(b) {
+    angleTo: function angleTo(b) {
         return Math.atan2(this.y - b.y, this.x - b.x);
     },
 
@@ -203,7 +224,7 @@ Point.prototype = {
      * @param {Point} b the other point
      * @return {Number} angle
      */
-    angleWith: function(b) {
+    angleWith: function angleWith(b) {
         return this.angleWithSep(b.x, b.y);
     },
 
@@ -214,13 +235,11 @@ Point.prototype = {
      * @param {Number} y the y-coordinate
      * @return {Number} the angle in radians
      */
-    angleWithSep: function(x, y) {
-        return Math.atan2(
-            this.x * y - this.y * x,
-            this.x * x + this.y * y);
+    angleWithSep: function angleWithSep(x, y) {
+        return Math.atan2(this.x * y - this.y * x, this.x * x + this.y * y);
     },
 
-    _matMult: function(m) {
+    _matMult: function _matMult(m) {
         var x = m[0] * this.x + m[1] * this.y,
             y = m[2] * this.x + m[3] * this.y;
         this.x = x;
@@ -228,55 +247,55 @@ Point.prototype = {
         return this;
     },
 
-    _add: function(p) {
+    _add: function _add(p) {
         this.x += p.x;
         this.y += p.y;
         return this;
     },
 
-    _sub: function(p) {
+    _sub: function _sub(p) {
         this.x -= p.x;
         this.y -= p.y;
         return this;
     },
 
-    _mult: function(k) {
+    _mult: function _mult(k) {
         this.x *= k;
         this.y *= k;
         return this;
     },
 
-    _div: function(k) {
+    _div: function _div(k) {
         this.x /= k;
         this.y /= k;
         return this;
     },
 
-    _multByPoint: function(p) {
+    _multByPoint: function _multByPoint(p) {
         this.x *= p.x;
         this.y *= p.y;
         return this;
     },
 
-    _divByPoint: function(p) {
+    _divByPoint: function _divByPoint(p) {
         this.x /= p.x;
         this.y /= p.y;
         return this;
     },
 
-    _unit: function() {
+    _unit: function _unit() {
         this._div(this.mag());
         return this;
     },
 
-    _perp: function() {
+    _perp: function _perp() {
         var y = this.y;
         this.y = this.x;
         this.x = -y;
         return this;
     },
 
-    _rotate: function(angle) {
+    _rotate: function _rotate(angle) {
         var cos = Math.cos(angle),
             sin = Math.sin(angle),
             x = cos * this.x - sin * this.y,
@@ -286,7 +305,7 @@ Point.prototype = {
         return this;
     },
 
-    _rotateAround: function(angle, p) {
+    _rotateAround: function _rotateAround(angle, p) {
         var cos = Math.cos(angle),
             sin = Math.sin(angle),
             x = p.x + cos * (this.x - p.x) - sin * (this.y - p.y),
@@ -296,7 +315,7 @@ Point.prototype = {
         return this;
     },
 
-    _round: function() {
+    _round: function _round() {
         this.x = Math.round(this.x);
         this.y = Math.round(this.y);
         return this;
@@ -324,188 +343,7 @@ Point.convert = function (a) {
     return a;
 };
 
-},{}],3:[function(require,module,exports){
-(function (global){
-'use strict';
-
-var maptalks = (typeof window !== "undefined" ? window['maptalks'] : typeof global !== "undefined" ? global['maptalks'] : null);
-var Point = require('point-geometry');
-var PlotUtils = require('./PlotUtils');
-var StraightArrow = require('./StraightArrow');
-
-/**
- * @classdesc Curve style LineString
- * @class
- * @category geometry
- * @extends {maptalks.LineString}
- * @param {maptalks.Coordinate[]|Number[][]} coordinates - coordinates of the line string
- * @param {Object} [options=null]   - construct options defined in [maptalks.DiagonalArrow]{@link maptalks.DiagonalArrow#options}
- * @example
- * var curve = new maptalks.DiagonalArrow(
- *     [
- *         [121.47083767181408,31.214448123476995],
- *         [121.4751292062378,31.215475523000404],
- *         [121.47869117980943,31.211916269810335]
- *     ],
- *     {
- *         symbol : {
- *             'lineWidth' : 5
- *         }
- *     }
- * ).addTo(layer);
- */
-var DiagonalArrow = module.exports = maptalks.StraightArrow.extend(/** @lends maptalks.DiagonalArrow.prototype */{
-    /**
-     * @property {Object} options
-     */
-    options:{
-        'widthRatio' : 0.20,
-        'arrowStyle' : []
-    },
-
-    _toJSON:function (options) {
-        return {
-            'feature' : this.toGeoJSON(options),
-            'subType' : 'DiagonalArrow'
-        };
-    },
-
-    _getPaintParams: function () {
-        var points = this._getPath2DPoints(this._getPrjCoordinates());
-        if (points.length <= 1) {
-            return null;
-        }
-        var length = this._get2DLength();
-        var lineWidth = length * this.options['widthRatio'];
-
-        var arrowPairs = PlotUtils.getArrowBody(points, lineWidth, this.getMap(), 0.15, length);
-        var h1 = arrowPairs[0][arrowPairs[0].length - 1],
-            h2 = arrowPairs[1][arrowPairs[1].length - 1];
-        var arrowHead = this._getArrowHead(h1, h2, points[points.length - 1], lineWidth * 0.3, 2);
-        var t1 = arrowPairs[0][0],
-            t2 = arrowPairs[1][0];
-        var plots = [];
-        plots.push.apply(plots, arrowPairs[0]);
-        plots.push.apply(plots, arrowHead);
-        for (var i = arrowPairs[1].length - 1; i >= 0; i--) {
-            plots.push(arrowPairs[1][i]);
-        }
-        // arrowPairs.push(arrowHead);
-        return [plots, [arrowPairs[0].length, arrowHead.length, arrowPairs[1].length]];
-    }
-
-});
-
-DiagonalArrow.fromJSON = function (json) {
-    var feature = json['feature'];
-    var arrow = new maptalks.DiagonalArrow(feature['geometry']['coordinates'], json['options']);
-    arrow.setProperties(feature['properties']);
-    return arrow;
-};
-
-maptalks.DrawTool.registerMode('DiagonalArrow', {
-    'action' : 'clickDblclick',
-    'create' : function (path) {
-        return new maptalks.DiagonalArrow(path);
-    },
-    'update' : function (path, geometry) {
-        geometry.setCoordinates(path);
-    },
-    'generate' : function (geometry) {
-        return geometry;
-    }
-});
-
-}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./PlotUtils":5,"./StraightArrow":6,"point-geometry":2}],4:[function(require,module,exports){
-(function (global){
-'use strict';
-
-var maptalks = (typeof window !== "undefined" ? window['maptalks'] : typeof global !== "undefined" ? global['maptalks'] : null);
-var Point = require('point-geometry');
-var PlotUtils = require('./PlotUtils');
-var DiagonalArrow = require('./DiagonalArrow');
-
-/**
- * @classdesc Curve style LineString
- * @class
- * @category geometry
- * @extends {maptalks.LineString}
- * @param {maptalks.Coordinate[]|Number[][]} coordinates - coordinates of the line string
- * @param {Object} [options=null]   - construct options defined in [maptalks.DoveTailDiagonalArrow]{@link maptalks.DoveTailDiagonalArrow#options}
- * @example
- * var curve = new maptalks.DoveTailDiagonalArrow(
- *     [
- *         [121.47083767181408,31.214448123476995],
- *         [121.4751292062378,31.215475523000404],
- *         [121.47869117980943,31.211916269810335]
- *     ],
- *     {
- *         symbol : {
- *             'lineWidth' : 5
- *         }
- *     }
- * ).addTo(layer);
- */
-var DoveTailDiagonalArrow = module.exports = maptalks.DiagonalArrow.extend(/** @lends maptalks.DoveTailDiagonalArrow.prototype */{
-    /**
-     * @property {Object} options
-     */
-    options:{
-        'widthRatio' : 0.20,
-        'arrowStyle' : []
-    },
-
-    _toJSON:function (options) {
-        return {
-            'feature' : this.toGeoJSON(options),
-            'subType' : 'DoveTailDiagonalArrow'
-        };
-    },
-
-    _closeArrow: function (ctx, last, first) {
-        var t1 = new Point(last.x, last.y);
-        var t2 = new Point(first.x, first.y);
-        var m = new Point(t1.x + t2.x, t1.y + t2.y).mult(1 / 2);
-        var dist = t1.dist(t2);
-        var normal = t1.sub(t2)._unit()._perp();
-        var xc = m.x + dist * 0.618 * normal.x,
-            yc = m.y + dist * 0.618 * normal.y;
-        ctx.lineTo(xc, yc);
-        ctx.closePath();
-    }
-
-});
-
-DoveTailDiagonalArrow.fromJSON = function (json) {
-    var feature = json['feature'];
-    var arrow = new maptalks.DoveTailDiagonalArrow(feature['geometry']['coordinates'], json['options']);
-    arrow.setProperties(feature['properties']);
-    return arrow;
-};
-
-maptalks.DrawTool.registerMode('DoveTailDiagonalArrow', {
-    'action' : 'clickDblclick',
-    'create' : function (path) {
-        return new maptalks.DoveTailDiagonalArrow(path);
-    },
-    'update' : function (path, geometry) {
-        geometry.setCoordinates(path);
-    },
-    'generate' : function (geometry) {
-        return geometry;
-    }
-});
-
-}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./DiagonalArrow":3,"./PlotUtils":5,"point-geometry":2}],5:[function(require,module,exports){
-(function (global){
-'use strict';
-
-var maptalks = (typeof window !== "undefined" ? window['maptalks'] : typeof global !== "undefined" ? global['maptalks'] : null);
-var Point = require('point-geometry');
-
-module.exports = {
+var PlotUtils = {
     /**
      * Get arrow body for given vertexes.
      * @param  {maptalks.Coordinate[]} vertexes    - input vertexes
@@ -514,19 +352,19 @@ module.exports = {
      * @param  {[type]} ratio     [description]
      * @return {[type]}           [description]
      */
-    getArrowBody: function (vertexes, lineWidth, map, ratio, arrowLength) {
+    getArrowBody: function getArrowBody(vertexes, lineWidth, map, ratio, arrowLength) {
         lineWidth /= 2;
         var arrowWidth;
         var currentLen = 0;
         var upPlots = [],
-            downPlots = [],
-            pair;
+            downPlots = [];
+        var pair;
         var dx, dy;
         var current, prev, next;
         var normal, currentNormal, nextNormal;
         for (var i = 1, l = vertexes.length; i < l; i++) {
-            current = new Point(vertexes[i].x, vertexes[i].y);
-            prev = new Point(vertexes[i - 1].x, vertexes[i - 1].y);
+            current = new index(vertexes[i].x, vertexes[i].y);
+            prev = new index(vertexes[i - 1].x, vertexes[i - 1].y);
             if (ratio && arrowLength) {
                 currentLen += current.dist(prev);
                 arrowWidth = (1 - (1 - ratio) * currentLen / arrowLength) * lineWidth;
@@ -535,7 +373,7 @@ module.exports = {
             }
 
             if (i < l - 1) {
-                next = new Point(vertexes[i + 1].x, vertexes[i + 1].y);
+                next = new index(vertexes[i + 1].x, vertexes[i + 1].y);
             } else {
                 next = null;
             }
@@ -558,6 +396,7 @@ module.exports = {
         return [upPlots, downPlots];
     },
 
+
     /**
      *                  nextNormal
      *    currentVertex    ↑
@@ -572,14 +411,13 @@ module.exports = {
      * @param  {[type]} nextNormal [description]
      * @return {[type]}            [description]
      */
-    _getJoinNormal: function (normal, nextNormal) {
+    _getJoinNormal: function _getJoinNormal(normal, nextNormal) {
         var joinNormal = normal.add(nextNormal)._unit();
         var cosHalfAngle = joinNormal.x * nextNormal.x + joinNormal.y * nextNormal.y;
         var miterLength = 1 / cosHalfAngle;
         return joinNormal._mult(miterLength);
     },
-
-    _getPlotPair: function (vertex, normal, lineWidth, map) {
+    _getPlotPair: function _getPlotPair(vertex, normal, lineWidth, map) {
         // first plot pair
         var dx = normal.x * lineWidth;
         var dy = normal.y * lineWidth;
@@ -589,14 +427,75 @@ module.exports = {
     }
 };
 
-}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"point-geometry":2}],6:[function(require,module,exports){
-(function (global){
-'use strict';
+function _defaults(obj, defaults) { var keys = Object.getOwnPropertyNames(defaults); for (var i = 0; i < keys.length; i++) { var key = keys[i]; var value = Object.getOwnPropertyDescriptor(defaults, key); if (value && value.configurable && obj[key] === undefined) { Object.defineProperty(obj, key, value); } } return obj; }
 
-var maptalks = (typeof window !== "undefined" ? window['maptalks'] : typeof global !== "undefined" ? global['maptalks'] : null);
-var Point = require('point-geometry');
-var PlotUtils = require('./PlotUtils');
+
+
+
+
+
+
+
+
+
+
+var classCallCheck = function (instance, Constructor) {
+  if (!(instance instanceof Constructor)) {
+    throw new TypeError("Cannot call a class as a function");
+  }
+};
+
+
+
+
+
+
+
+
+
+
+
+var inherits = function (subClass, superClass) {
+  if (typeof superClass !== "function" && superClass !== null) {
+    throw new TypeError("Super expression must either be null or a function, not " + typeof superClass);
+  }
+
+  subClass.prototype = Object.create(superClass && superClass.prototype, {
+    constructor: {
+      value: subClass,
+      enumerable: false,
+      writable: true,
+      configurable: true
+    }
+  });
+  if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : _defaults(subClass, superClass);
+};
+
+
+
+
+
+
+
+
+
+
+
+var possibleConstructorReturn = function (self, call) {
+  if (!self) {
+    throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
+  }
+
+  return call && (typeof call === "object" || typeof call === "function") ? call : self;
+};
+
+/**
+ * @property {Object} options
+ */
+var options = {
+    'widthRatio': 0.10,
+    'arrowStyle': []
+};
 
 /**
  * @classdesc Curve style LineString
@@ -619,23 +518,32 @@ var PlotUtils = require('./PlotUtils');
  *     }
  * ).addTo(layer);
  */
-var StraightArrow = module.exports = maptalks.Curve.extend(/** @lends maptalks.StraightArrow.prototype */{
-    /**
-     * @property {Object} options
-     */
-    options:{
-        'widthRatio' : 0.10,
-        'arrowStyle' : []
-    },
 
-    _toJSON:function (options) {
+var StraightArrow = function (_maptalks$Curve) {
+    inherits(StraightArrow, _maptalks$Curve);
+
+    function StraightArrow() {
+        classCallCheck(this, StraightArrow);
+        return possibleConstructorReturn(this, _maptalks$Curve.apply(this, arguments));
+    }
+
+    StraightArrow.fromJSON = function fromJSON(json) {
+        var feature = json['feature'];
+        var arrow = new StraightArrow(feature['geometry']['coordinates'], json['options']);
+        arrow.setProperties(feature['properties']);
+        return arrow;
+    };
+
+    StraightArrow.prototype._toJSON = function _toJSON(options) {
         return {
-            'feature' : this.toGeoJSON(options),
-            'subType' : 'StraightArrow'
+            'feature': this.toGeoJSON(options),
+            'subType': 'StraightArrow'
         };
-    },
+    };
 
-    _getPaintParams: function () {
+    StraightArrow.prototype._getPaintParams = function _getPaintParams() {
+        var map = this.getMap();
+        var zoomScale = map.getScale();
         var points = this._getPath2DPoints(this._getPrjCoordinates());
         if (points.length <= 1) {
             return null;
@@ -647,21 +555,21 @@ var StraightArrow = module.exports = maptalks.Curve.extend(/** @lends maptalks.S
         var h1 = arrowPairs[0][arrowPairs[0].length - 1],
             h2 = arrowPairs[1][arrowPairs[1].length - 1];
         var arrowHead = this._getArrowHead(h1, h2, points[points.length - 1], lineWidth);
-        var t1 = arrowPairs[0][0],
-            t2 = arrowPairs[1][0];
         var plots = [];
         plots.push.apply(plots, arrowPairs[0]);
         plots.push.apply(plots, arrowHead);
         for (var i = arrowPairs[1].length - 1; i >= 0; i--) {
             plots.push(arrowPairs[1][i]);
         }
-        // arrowPairs.push(arrowHead);
+        // convert to point in maxZoom
+        plots = plots.map(function (p) {
+            return p.multi(zoomScale);
+        });
         return [plots, [arrowPairs[0].length, arrowHead.length, arrowPairs[1].length]];
-    },
+    };
 
-    _paintOn: function (ctx, points, segs, lineOpacity, fillOpacity, lineDasharray) {
+    StraightArrow.prototype._paintOn = function _paintOn(ctx, points, segs, lineOpacity, fillOpacity, lineDasharray) {
         ctx.beginPath();
-        var l = segs[0];
         var seg;
         //draw body upside
         var i = 0;
@@ -679,11 +587,11 @@ var StraightArrow = module.exports = maptalks.Curve.extend(/** @lends maptalks.S
         this._closeArrow(ctx, points[points.length - 1], points[0]);
         maptalks.Canvas._stroke(ctx, lineOpacity);
         maptalks.Canvas.fillCanvas(ctx, fillOpacity, points[0].x, points[0].y);
-    },
+    };
 
-    _closeArrow: function (ctx) {
+    StraightArrow.prototype._closeArrow = function _closeArrow(ctx) {
         ctx.closePath();
-    },
+    };
 
     /**
      * Get points of arrow head
@@ -693,41 +601,228 @@ var StraightArrow = module.exports = maptalks.Curve.extend(/** @lends maptalks.S
      * @param  {Number} lineWidth         - line width
      * @return {maptalks.Coordinate[]}
      */
-    _getArrowHead: function (h1, h2, vertex, lineWidth, hScale) {
+
+
+    StraightArrow.prototype._getArrowHead = function _getArrowHead(h1, h2, vertex, lineWidth, hScale) {
         if (!hScale) {
             hScale = 1;
         }
-        h1 = new Point(h1.x, h1.y);
-        h2 = new Point(h2.x, h2.y);
+        h1 = new index(h1.x, h1.y);
+        h2 = new index(h2.x, h2.y);
         var normal = h1.sub(h2)._unit();
         var head0 = vertex.add(lineWidth * normal.x, lineWidth * normal.y);
         var head2 = vertex.add(lineWidth * -normal.x, lineWidth * -normal.y);
         normal._perp()._mult(-1);
         var head1 = vertex.add(hScale * lineWidth * normal.x, hScale * lineWidth * normal.y);
-        return [head0, head1, head2]
-    }
+        return [head0, head1, head2];
+    };
 
-});
-
-StraightArrow.fromJSON = function (json) {
-    var feature = json['feature'];
-    var StraightArrow = new maptalks.StraightArrow(feature['geometry']['coordinates'], json['options']);
-    StraightArrow.setProperties(feature['properties']);
     return StraightArrow;
-};
+}(maptalks.Curve);
+
+StraightArrow.mergeOptions(options);
+
+StraightArrow.registerJSONType('StraightArrow');
 
 maptalks.DrawTool.registerMode('StraightArrow', {
-    'action' : 'clickDblclick',
-    'create' : function (path) {
-        return new maptalks.StraightArrow(path);
+    'action': 'clickDblclick',
+    create: function create(path) {
+        return new StraightArrow(path);
     },
-    'update' : function (path, geometry) {
+    update: function update(path, geometry) {
         geometry.setCoordinates(path);
     },
-    'generate' : function (geometry) {
+    generate: function generate(geometry) {
         return geometry;
     }
 });
 
-}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./PlotUtils":5,"point-geometry":2}]},{},[1]);
+/**
+ * @property {Object} options
+ */
+var options$1 = {
+    'widthRatio': 0.20,
+    'arrowStyle': []
+};
+
+/**
+ * @classdesc Curve style LineString
+ * @class
+ * @category geometry
+ * @extends {maptalks.LineString}
+ * @param {maptalks.Coordinate[]|Number[][]} coordinates - coordinates of the line string
+ * @param {Object} [options=null]   - construct options defined in [maptalks.DiagonalArrow]{@link maptalks.DiagonalArrow#options}
+ * @example
+ * var curve = new maptalks.DiagonalArrow(
+ *     [
+ *         [121.47083767181408,31.214448123476995],
+ *         [121.4751292062378,31.215475523000404],
+ *         [121.47869117980943,31.211916269810335]
+ *     ],
+ *     {
+ *         symbol : {
+ *             'lineWidth' : 5
+ *         }
+ *     }
+ * ).addTo(layer);
+ */
+
+var DiagonalArrow = function (_StraightArrow) {
+    inherits(DiagonalArrow, _StraightArrow);
+
+    function DiagonalArrow() {
+        classCallCheck(this, DiagonalArrow);
+        return possibleConstructorReturn(this, _StraightArrow.apply(this, arguments));
+    }
+
+    DiagonalArrow.fromJSON = function fromJSON(json) {
+        var feature = json['feature'];
+        var arrow = new DiagonalArrow(feature['geometry']['coordinates'], json['options']);
+        arrow.setProperties(feature['properties']);
+        return arrow;
+    };
+
+    DiagonalArrow.prototype._toJSON = function _toJSON(options) {
+        return {
+            'feature': this.toGeoJSON(options),
+            'subType': 'DiagonalArrow'
+        };
+    };
+
+    DiagonalArrow.prototype._getPaintParams = function _getPaintParams() {
+        var points = this._getPath2DPoints(this._getPrjCoordinates());
+        if (points.length <= 1) {
+            return null;
+        }
+        var zoomScale = this.getMap().getScale();
+        var length = this._get2DLength();
+        var lineWidth = length * this.options['widthRatio'];
+
+        var arrowPairs = PlotUtils.getArrowBody(points, lineWidth, this.getMap(), 0.15, length);
+        var h1 = arrowPairs[0][arrowPairs[0].length - 1],
+            h2 = arrowPairs[1][arrowPairs[1].length - 1];
+        var arrowHead = this._getArrowHead(h1, h2, points[points.length - 1], lineWidth * 0.3, 2);
+        var plots = [];
+        plots.push.apply(plots, arrowPairs[0]);
+        plots.push.apply(plots, arrowHead);
+        for (var i = arrowPairs[1].length - 1; i >= 0; i--) {
+            plots.push(arrowPairs[1][i]);
+        }
+        // convert to point in maxZoom
+        plots = plots.map(function (p) {
+            return p.multi(zoomScale);
+        });
+        return [plots, [arrowPairs[0].length, arrowHead.length, arrowPairs[1].length]];
+    };
+
+    return DiagonalArrow;
+}(StraightArrow);
+
+DiagonalArrow.mergeOptions(options$1);
+
+DiagonalArrow.registerJSONType('DiagonalArrow');
+
+maptalks.DrawTool.registerMode('DiagonalArrow', {
+    'action': 'clickDblclick',
+    'create': function create(path) {
+        return new DiagonalArrow(path);
+    },
+    'update': function update(path, geometry) {
+        geometry.setCoordinates(path);
+    },
+    'generate': function generate(geometry) {
+        return geometry;
+    }
+});
+
+/**
+ * @property {Object} options
+ */
+var options$2 = {
+    'widthRatio': 0.20,
+    'arrowStyle': []
+};
+
+/**
+ * @classdesc Curve style LineString
+ * @class
+ * @category geometry
+ * @extends {maptalks.LineString}
+ * @param {maptalks.Coordinate[]|Number[][]} coordinates - coordinates of the line string
+ * @param {Object} [options=null]   - construct options defined in [maptalks.DoveTailDiagonalArrow]{@link maptalks.DoveTailDiagonalArrow#options}
+ * @example
+ * var curve = new maptalks.DoveTailDiagonalArrow(
+ *     [
+ *         [121.47083767181408,31.214448123476995],
+ *         [121.4751292062378,31.215475523000404],
+ *         [121.47869117980943,31.211916269810335]
+ *     ],
+ *     {
+ *         symbol : {
+ *             'lineWidth' : 5
+ *         }
+ *     }
+ * ).addTo(layer);
+ */
+
+var DoveTailDiagonalArrow = function (_DiagonalArrow) {
+    inherits(DoveTailDiagonalArrow, _DiagonalArrow);
+
+    function DoveTailDiagonalArrow() {
+        classCallCheck(this, DoveTailDiagonalArrow);
+        return possibleConstructorReturn(this, _DiagonalArrow.apply(this, arguments));
+    }
+
+    DoveTailDiagonalArrow.fromJSON = function fromJSON(json) {
+        var feature = json['feature'];
+        var arrow = new DoveTailDiagonalArrow(feature['geometry']['coordinates'], json['options']);
+        arrow.setProperties(feature['properties']);
+        return arrow;
+    };
+
+    DoveTailDiagonalArrow.prototype._toJSON = function _toJSON(options) {
+        return {
+            'feature': this.toGeoJSON(options),
+            'subType': 'DoveTailDiagonalArrow'
+        };
+    };
+
+    DoveTailDiagonalArrow.prototype._closeArrow = function _closeArrow(ctx, last, first) {
+        var t1 = new index(last.x, last.y);
+        var t2 = new index(first.x, first.y);
+        var m = new index(t1.x + t2.x, t1.y + t2.y).mult(1 / 2);
+        var dist = t1.dist(t2);
+        var normal = t1.sub(t2)._unit()._perp();
+        var xc = m.x + dist * 0.618 * normal.x,
+            yc = m.y + dist * 0.618 * normal.y;
+        ctx.lineTo(xc, yc);
+        ctx.closePath();
+    };
+
+    return DoveTailDiagonalArrow;
+}(DiagonalArrow);
+
+DoveTailDiagonalArrow.mergeOptions(options$2);
+
+DoveTailDiagonalArrow.registerJSONType('DoveTailDiagonalArrow');
+
+maptalks.DrawTool.registerMode('DoveTailDiagonalArrow', {
+    'action': 'clickDblclick',
+    'create': function create(path) {
+        return new DoveTailDiagonalArrow(path);
+    },
+    'update': function update(path, geometry) {
+        geometry.setCoordinates(path);
+    },
+    'generate': function generate(geometry) {
+        return geometry;
+    }
+});
+
+exports.StraightArrow = StraightArrow;
+exports.DiagonalArrow = DiagonalArrow;
+exports.DoveTailDiagonalArrow = DoveTailDiagonalArrow;
+
+Object.defineProperty(exports, '__esModule', { value: true });
+
+})));

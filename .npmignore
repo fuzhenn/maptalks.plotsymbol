@@ -1,13 +1,3 @@
-coverage/
-doc/
-src/
-test/
-gulpfile.js
-jsdoc.json
-karma.conf.js
-.editorconfig
-.eslintrc
-.eslintignore
-.gitignore
-.projectile
-circle.yml
+/**/*
+dist/*.gz
+!dist/*.js

@@ -1,5 +1,5 @@
-# maptalks.clusterlayer.js
+# maptalks.plotsymbol
 
-[![CircleCI](https://circleci.com/gh/MapTalks/maptalks.clusterlayer.js.svg?style=svg)](https://circleci.com/gh/MapTalks/maptalks.clusterlayer.js)
+[![CircleCI](https://circleci.com/gh/fuzhenn/maptalks.plotsymbol.svg?style=svg)](https://circleci.com/gh/fuzhenn/maptalks.plotsymbol)
 
-A layer of maptalks to cluster markers.
+A maptalks plugin to support plot symbols, e.g.  DiagonalArrow, StraightArrow, etc.

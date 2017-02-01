@@ -1,7 +1,3 @@
-'use strict';
-
-var maptalks = require('maptalks');
-
-maptalks.StraightArrow = require('./src/StraightArrow');
-maptalks.DiagonalArrow = require('./src/DiagonalArrow');
-maptalks.DoveTailDiagonalArrow = require('./src/DoveTailDiagonalArrow');
+export { default as StraightArrow } from './src/StraightArrow';
+export { default as DiagonalArrow } from './src/DiagonalArrow';
+export { default as DoveTailDiagonalArrow } from './src/DoveTailDiagonalArrow';

@@ -1,8 +1,14 @@
-'use strict';
+import * as maptalks from 'maptalks';
+import Point from 'point-geometry';
+import PlotUtils from './PlotUtils';
 
-var maptalks = require('maptalks');
-var Point = require('point-geometry');
-var PlotUtils = require('./PlotUtils');
+/**
+ * @property {Object} options
+ */
+const options = {
+    'widthRatio' : 0.10,
+    'arrowStyle' : []
+};
 
 /**
  * @classdesc Curve style LineString
@@ -25,49 +31,49 @@ var PlotUtils = require('./PlotUtils');
  *     }
  * ).addTo(layer);
  */
-var StraightArrow = module.exports = maptalks.Curve.extend(/** @lends maptalks.StraightArrow.prototype */{
-    /**
-     * @property {Object} options
-     */
-    options:{
-        'widthRatio' : 0.10,
-        'arrowStyle' : []
-    },
+export default class StraightArrow extends maptalks.Curve {
 
-    _toJSON:function (options) {
+    static fromJSON(json) {
+        const feature = json['feature'];
+        const arrow = new StraightArrow(feature['geometry']['coordinates'], json['options']);
+        arrow.setProperties(feature['properties']);
+        return arrow;
+    }
+
+    _toJSON(options) {
         return {
             'feature' : this.toGeoJSON(options),
             'subType' : 'StraightArrow'
         };
-    },
+    }
 
-    _getPaintParams: function () {
-        var points = this._getPath2DPoints(this._getPrjCoordinates());
+    _getPaintParams() {
+        const map = this.getMap();
+        const zoomScale = map.getScale();
+        const points = this._getPath2DPoints(this._getPrjCoordinates());
         if (points.length <= 1) {
             return null;
         }
-        var length = this._get2DLength();
-        var lineWidth = length * this.options['widthRatio'];
+        const length = this._get2DLength();
+        const lineWidth = length * this.options['widthRatio'];
 
-        var arrowPairs = PlotUtils.getArrowBody(points, lineWidth, this.getMap());
-        var h1 = arrowPairs[0][arrowPairs[0].length - 1],
+        const arrowPairs = PlotUtils.getArrowBody(points, lineWidth, this.getMap());
+        const h1 = arrowPairs[0][arrowPairs[0].length - 1],
             h2 = arrowPairs[1][arrowPairs[1].length - 1];
-        var arrowHead = this._getArrowHead(h1, h2, points[points.length - 1], lineWidth);
-        var t1 = arrowPairs[0][0],
-            t2 = arrowPairs[1][0];
+        const arrowHead = this._getArrowHead(h1, h2, points[points.length - 1], lineWidth);
         var plots = [];
         plots.push.apply(plots, arrowPairs[0]);
         plots.push.apply(plots, arrowHead);
-        for (var i = arrowPairs[1].length - 1; i >= 0; i--) {
+        for (let i = arrowPairs[1].length - 1; i >= 0; i--) {
             plots.push(arrowPairs[1][i]);
         }
-        // arrowPairs.push(arrowHead);
+        // convert to point in maxZoom
+        plots = plots.map(p => p.multi(zoomScale));
         return [plots, [arrowPairs[0].length, arrowHead.length, arrowPairs[1].length]];
-    },
+    }
 
-    _paintOn: function (ctx, points, segs, lineOpacity, fillOpacity, lineDasharray) {
+    _paintOn(ctx, points, segs, lineOpacity, fillOpacity, lineDasharray) {
         ctx.beginPath();
-        var l = segs[0];
         var seg;
         //draw body upside
         var i = 0;
@@ -85,11 +91,11 @@ var StraightArrow = module.exports = maptalks.Curve.extend(/** @lends maptalks.S
         this._closeArrow(ctx, points[points.length - 1], points[0]);
         maptalks.Canvas._stroke(ctx, lineOpacity);
         maptalks.Canvas.fillCanvas(ctx, fillOpacity, points[0].x, points[0].y);
-    },
+    }
 
-    _closeArrow: function (ctx) {
+    _closeArrow(ctx) {
         ctx.closePath();
-    },
+    }
 
     /**
      * Get points of arrow head
@@ -99,38 +105,35 @@ var StraightArrow = module.exports = maptalks.Curve.extend(/** @lends maptalks.S
      * @param  {Number} lineWidth         - line width
      * @return {maptalks.Coordinate[]}
      */
-    _getArrowHead: function (h1, h2, vertex, lineWidth, hScale) {
+    _getArrowHead(h1, h2, vertex, lineWidth, hScale) {
         if (!hScale) {
             hScale = 1;
         }
         h1 = new Point(h1.x, h1.y);
         h2 = new Point(h2.x, h2.y);
-        var normal = h1.sub(h2)._unit();
-        var head0 = vertex.add(lineWidth * normal.x, lineWidth * normal.y);
-        var head2 = vertex.add(lineWidth * -normal.x, lineWidth * -normal.y);
+        const normal = h1.sub(h2)._unit();
+        const head0 = vertex.add(lineWidth * normal.x, lineWidth * normal.y);
+        const head2 = vertex.add(lineWidth * -normal.x, lineWidth * -normal.y);
         normal._perp()._mult(-1);
-        var head1 = vertex.add(hScale * lineWidth * normal.x, hScale * lineWidth * normal.y);
-        return [head0, head1, head2]
+        const head1 = vertex.add(hScale * lineWidth * normal.x, hScale * lineWidth * normal.y);
+        return [head0, head1, head2];
     }
 
-});
+}
 
-StraightArrow.fromJSON = function (json) {
-    var feature = json['feature'];
-    var StraightArrow = new maptalks.StraightArrow(feature['geometry']['coordinates'], json['options']);
-    StraightArrow.setProperties(feature['properties']);
-    return StraightArrow;
-};
+StraightArrow.mergeOptions(options);
+
+StraightArrow.registerJSONType('StraightArrow');
 
 maptalks.DrawTool.registerMode('StraightArrow', {
     'action' : 'clickDblclick',
-    'create' : function (path) {
-        return new maptalks.StraightArrow(path);
+    create(path) {
+        return new StraightArrow(path);
     },
-    'update' : function (path, geometry) {
+    update(path, geometry) {
         geometry.setCoordinates(path);
     },
-    'generate' : function (geometry) {
+    generate(geometry) {
         return geometry;
     }
 });

@@ -1,9 +1,14 @@
-'use strict';
+import * as maptalks from 'maptalks';
+import DiagonalArrow from './DiagonalArrow';
+import Point from 'point-geometry';
 
-var maptalks = require('maptalks');
-var Point = require('point-geometry');
-var PlotUtils = require('./PlotUtils');
-var DiagonalArrow = require('./DiagonalArrow');
+/**
+ * @property {Object} options
+ */
+const options = {
+    'widthRatio' : 0.20,
+    'arrowStyle' : []
+};
 
 /**
  * @classdesc Curve style LineString
@@ -26,47 +31,44 @@ var DiagonalArrow = require('./DiagonalArrow');
  *     }
  * ).addTo(layer);
  */
-var DoveTailDiagonalArrow = module.exports = maptalks.DiagonalArrow.extend(/** @lends maptalks.DoveTailDiagonalArrow.prototype */{
-    /**
-     * @property {Object} options
-     */
-    options:{
-        'widthRatio' : 0.20,
-        'arrowStyle' : []
-    },
+export default class DoveTailDiagonalArrow extends DiagonalArrow {
 
-    _toJSON:function (options) {
+    static fromJSON(json) {
+        const feature = json['feature'];
+        const arrow = new DoveTailDiagonalArrow(feature['geometry']['coordinates'], json['options']);
+        arrow.setProperties(feature['properties']);
+        return arrow;
+    }
+
+    _toJSON(options) {
         return {
             'feature' : this.toGeoJSON(options),
             'subType' : 'DoveTailDiagonalArrow'
         };
-    },
+    }
 
-    _closeArrow: function (ctx, last, first) {
-        var t1 = new Point(last.x, last.y);
-        var t2 = new Point(first.x, first.y);
-        var m = new Point(t1.x + t2.x, t1.y + t2.y).mult(1 / 2);
-        var dist = t1.dist(t2);
-        var normal = t1.sub(t2)._unit()._perp();
-        var xc = m.x + dist * 0.618 * normal.x,
+    _closeArrow(ctx, last, first) {
+        const t1 = new Point(last.x, last.y);
+        const t2 = new Point(first.x, first.y);
+        const m = new Point(t1.x + t2.x, t1.y + t2.y).mult(1 / 2);
+        const dist = t1.dist(t2);
+        const normal = t1.sub(t2)._unit()._perp();
+        const xc = m.x + dist * 0.618 * normal.x,
             yc = m.y + dist * 0.618 * normal.y;
         ctx.lineTo(xc, yc);
         ctx.closePath();
     }
 
-});
+}
 
-DoveTailDiagonalArrow.fromJSON = function (json) {
-    var feature = json['feature'];
-    var arrow = new maptalks.DoveTailDiagonalArrow(feature['geometry']['coordinates'], json['options']);
-    arrow.setProperties(feature['properties']);
-    return arrow;
-};
+DoveTailDiagonalArrow.mergeOptions(options);
+
+DoveTailDiagonalArrow.registerJSONType('DoveTailDiagonalArrow');
 
 maptalks.DrawTool.registerMode('DoveTailDiagonalArrow', {
     'action' : 'clickDblclick',
     'create' : function (path) {
-        return new maptalks.DoveTailDiagonalArrow(path);
+        return new DoveTailDiagonalArrow(path);
     },
     'update' : function (path, geometry) {
         geometry.setCoordinates(path);

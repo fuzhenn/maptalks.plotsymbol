@@ -1,9 +1,7 @@
-'use strict';
+import * as maptalks from 'maptalks';
+import Point from 'point-geometry';
 
-var maptalks = require('maptalks');
-var Point = require('point-geometry');
-
-module.exports = {
+export default {
     /**
      * Get arrow body for given vertexes.
      * @param  {maptalks.Coordinate[]} vertexes    - input vertexes
@@ -12,17 +10,17 @@ module.exports = {
      * @param  {[type]} ratio     [description]
      * @return {[type]}           [description]
      */
-    getArrowBody: function (vertexes, lineWidth, map, ratio, arrowLength) {
+    getArrowBody(vertexes, lineWidth, map, ratio, arrowLength) {
         lineWidth /= 2;
         var arrowWidth;
         var currentLen = 0;
-        var upPlots = [],
-            downPlots = [],
-            pair;
+        const upPlots = [],
+            downPlots = [];
+        var pair;
         var dx, dy;
         var current, prev, next;
         var normal, currentNormal, nextNormal;
-        for (var i = 1, l = vertexes.length; i < l; i++) {
+        for (let i = 1, l = vertexes.length; i < l; i++) {
             current = new Point(vertexes[i].x, vertexes[i].y);
             prev = new Point(vertexes[i - 1].x, vertexes[i - 1].y);
             if (ratio && arrowLength) {
@@ -70,19 +68,19 @@ module.exports = {
      * @param  {[type]} nextNormal [description]
      * @return {[type]}            [description]
      */
-    _getJoinNormal: function (normal, nextNormal) {
-        var joinNormal = normal.add(nextNormal)._unit();
-        var cosHalfAngle = joinNormal.x * nextNormal.x + joinNormal.y * nextNormal.y;
-        var miterLength = 1 / cosHalfAngle;
+    _getJoinNormal(normal, nextNormal) {
+        const joinNormal = normal.add(nextNormal)._unit();
+        const cosHalfAngle = joinNormal.x * nextNormal.x + joinNormal.y * nextNormal.y;
+        const miterLength = 1 / cosHalfAngle;
         return joinNormal._mult(miterLength);
     },
 
-    _getPlotPair: function (vertex, normal, lineWidth, map) {
+    _getPlotPair(vertex, normal, lineWidth, map) {
         // first plot pair
-        var dx = normal.x * lineWidth;
-        var dy = normal.y * lineWidth;
-        var p1 = vertex.add(dx, dy);
-        var p2 = vertex.add(-dx, -dy);
+        const dx = normal.x * lineWidth;
+        const dy = normal.y * lineWidth;
+        const p1 = vertex.add(dx, dy);
+        const p2 = vertex.add(-dx, -dy);
         return [p1, p2];
     }
-};
+}

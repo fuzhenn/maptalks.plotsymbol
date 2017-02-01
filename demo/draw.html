@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Map tools - Draw tool to draw geometries</title>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no, width=device-width">
+    <script src="https://unpkg.com/maptalks@<2.0.0/dist/maptalks.min.js"></script>
+    <script src="../dist/maptalks.plotsymbol.js"></script>
+    <link type="text/css" rel="stylesheet" href="https://unpkg.com/maptalks@<2.0.0/dist/maptalks.css">
+    <style>
+    html,body{
+        margin:0px;
+        height:100%;
+        width: 100%;
+     }
+    </style>
+  </head>
+  <body>
+
+    <div id="map" style="width:100%; height:100%;"></div>
+
+    <script>
+      var map = new maptalks.Map('map', {
+        center: [121.48542, 31.22854],
+        zoom: 14,
+        attributionControl : {
+            'content' : '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, &copy; <a href="https://carto.com/attributions">CARTO</a>'
+        },
+        baseLayer : new maptalks.TileLayer("base",{
+            'urlTemplate' : 'http://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}.png',
+            'subdomains'  : ['a','b','c','d','e']
+        })
+      });
+
+      var layer = new maptalks.VectorLayer('vector').addTo(map);
+
+      var drawTool = new maptalks.DrawTool({
+        mode: 'Point',
+        symbol : {
+            'polygonFill' : '#f00',
+            'polygonOpacity' : 0.5
+        }
+      }).addTo(map).disable();
+
+      drawTool.on('drawend', function (param) {
+        drawTool.disable();
+        var geometry = param.geometry;
+        layer.addGeometry(geometry);
+        geometry.startEdit();
+        geometry.updateSymbol({
+            'polygonFill' : '#ff0'
+        });
+      });
+
+      var items = ['StraightArrow', 'DiagonalArrow', 'DoveTailDiagonalArrow'].map(function (value) {
+        return {
+          item: value,
+          click: function () {
+            drawTool.setMode(value).enable();
+          }
+        };
+      });
+
+      var toolbar = new maptalks.control.Toolbar({
+        items: [
+          {
+            item: 'Shape',
+            children: items
+          },
+          {
+            item: 'Disable',
+            click: function () {
+              drawTool.disable();
+            }
+          },
+          {
+            item: 'Clear',
+            click: function () {
+              layer.clear();
+            }
+          }
+        ]
+      }).addTo(map);
+
+    </script>
+  </body>
+</html>
