@@ -6,11 +6,7 @@
 /*!
  * requires maptalks@>=0.36.2 
  */
-(function (global, factory) {
-	typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('maptalks')) :
-	typeof define === 'function' && define.amd ? define(['exports', 'maptalks'], factory) :
-	(factory((global.maptalks = global.maptalks || {}),global.maptalks));
-}(this, (function (exports,maptalks) { 'use strict';
+import { Canvas, Curve, DrawTool } from 'maptalks';
 
 var pointGeometry = Point;
 
@@ -581,15 +577,15 @@ var StraightArrow = function (_maptalks$Curve) {
         this._quadraticCurve(ctx, seg);
         //draw head
         i += segs[0];
-        maptalks.Canvas._path(ctx, points.slice(i, i + segs[1]), lineDasharray, lineOpacity);
+        Canvas._path(ctx, points.slice(i, i + segs[1]), lineDasharray, lineOpacity);
         //draw body downside
         i += segs[1];
         ctx.lineTo(points[i].x, points[i].y);
         seg = points.slice(i, i + segs[2]);
         this._quadraticCurve(ctx, seg);
         this._closeArrow(ctx, points[points.length - 1], points[0]);
-        maptalks.Canvas._stroke(ctx, lineOpacity);
-        maptalks.Canvas.fillCanvas(ctx, fillOpacity, points[0].x, points[0].y);
+        Canvas._stroke(ctx, lineOpacity);
+        Canvas.fillCanvas(ctx, fillOpacity, points[0].x, points[0].y);
     };
 
     StraightArrow.prototype._closeArrow = function _closeArrow(ctx) {
@@ -621,13 +617,13 @@ var StraightArrow = function (_maptalks$Curve) {
     };
 
     return StraightArrow;
-}(maptalks.Curve);
+}(Curve);
 
 StraightArrow.mergeOptions(options);
 
 StraightArrow.registerJSONType('StraightArrow');
 
-maptalks.DrawTool.registerMode('StraightArrow', {
+DrawTool.registerMode('StraightArrow', {
     'action': 'clickDblclick',
     create: function create(path) {
         return new StraightArrow(path);
@@ -725,7 +721,7 @@ DiagonalArrow.mergeOptions(options$1);
 
 DiagonalArrow.registerJSONType('DiagonalArrow');
 
-maptalks.DrawTool.registerMode('DiagonalArrow', {
+DrawTool.registerMode('DiagonalArrow', {
     'action': 'clickDblclick',
     'create': function create(path) {
         return new DiagonalArrow(path);
@@ -809,7 +805,7 @@ DoveTailDiagonalArrow.mergeOptions(options$2);
 
 DoveTailDiagonalArrow.registerJSONType('DoveTailDiagonalArrow');
 
-maptalks.DrawTool.registerMode('DoveTailDiagonalArrow', {
+DrawTool.registerMode('DoveTailDiagonalArrow', {
     'action': 'clickDblclick',
     'create': function create(path) {
         return new DoveTailDiagonalArrow(path);
@@ -822,12 +818,6 @@ maptalks.DrawTool.registerMode('DoveTailDiagonalArrow', {
     }
 });
 
-exports.StraightArrow = StraightArrow;
-exports.DiagonalArrow = DiagonalArrow;
-exports.DoveTailDiagonalArrow = DoveTailDiagonalArrow;
-
-Object.defineProperty(exports, '__esModule', { value: true });
+export { StraightArrow, DiagonalArrow, DoveTailDiagonalArrow };
 
 typeof console !== 'undefined' && console.log('maptalks.plotsymbol v0.2.0, requires maptalks@>=0.36.2.');
-
-})));
