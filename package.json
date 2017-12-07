@@ -11,6 +11,8 @@
   "module": "dist/maptalks.plotsymbol.es.js",
   "jsnext:main": "dist/maptalks.plotsymbol.es.js",
   "scripts": {
+    "preversion": "npm test",
+    "version": "gulp minify && git add -A dist",
     "lint": "eslint index.js test/**/*.js",
     "test": "gulp test",
     "pretest": "npm run lint",
