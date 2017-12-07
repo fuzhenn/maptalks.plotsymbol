@@ -52,7 +52,7 @@ export default class DiagonalArrow extends StraightArrow {
         if (points.length <= 1) {
             return null;
         }
-        const zoomScale = this.getMap().getScale();
+        const zoomScale = this.getMap().getGLScale();
         const length = this._get2DLength();
         const lineWidth = length * this.options['widthRatio'];
 

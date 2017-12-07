@@ -49,7 +49,7 @@ export default class StraightArrow extends maptalks.Curve {
 
     _getPaintParams() {
         const map = this.getMap();
-        const zoomScale = map.getScale();
+        const zoomScale = map.getGLScale();
         const points = this._getPath2DPoints(this._getPrjCoordinates());
         if (points.length <= 1) {
             return null;

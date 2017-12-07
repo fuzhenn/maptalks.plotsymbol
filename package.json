@@ -12,7 +12,9 @@
     "lint": "eslint index.js test/**/*.js",
     "test": "gulp test",
     "pretest": "npm run lint",
-    "prepublish": "npm run lint && gulp minify"
+    "prepublish": "npm run lint && gulp minify",
+    "build" : "gulp build",
+    "dev"   : "gulp watch"
   },
   "devDependencies": {
     "babel-eslint": "^7.1.1",
@@ -35,9 +37,12 @@
     "karma-mocha": "^1.3.0",
     "karma-mocha-reporter": "^2.2.1",
     "maptalks": "<2.0.0",
-    "maptalks-build-helpers": "^0.1.0",
+    "maptalks-build-helpers": "^0.4.3",
     "minimist": "^1.2.0",
     "mocha": "^2.4.5"
+  },
+  "peerDependencies": {
+    "maptalks" : ">=0.36.2"
   },
   "dependencies": {
     "point-geometry": "^0.1.0"
