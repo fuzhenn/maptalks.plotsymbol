@@ -8,13 +8,15 @@
     "url": "https://github.com/maptalks/maptalks.plotsymbol.git"
   },
   "main": "dist/maptalks.plotsymbol.js",
+  "module": "dist/maptalks.plotsymbol.es.js",
+  "jsnext:main": "dist/maptalks.plotsymbol.es.js",
   "scripts": {
     "lint": "eslint index.js test/**/*.js",
     "test": "gulp test",
     "pretest": "npm run lint",
     "prepublish": "npm run lint && gulp minify",
-    "build" : "gulp build",
-    "dev"   : "gulp watch"
+    "build": "gulp build",
+    "dev": "gulp watch"
   },
   "devDependencies": {
     "babel-eslint": "^7.1.1",
@@ -42,7 +44,7 @@
     "mocha": "^2.4.5"
   },
   "peerDependencies": {
-    "maptalks" : ">=0.36.2"
+    "maptalks": ">=0.36.2"
   },
   "dependencies": {
     "point-geometry": "^0.1.0"
