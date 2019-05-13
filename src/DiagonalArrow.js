@@ -78,7 +78,7 @@ DiagonalArrow.mergeOptions(options);
 DiagonalArrow.registerJSONType('DiagonalArrow');
 
 maptalks.DrawTool.registerMode('DiagonalArrow', {
-    'action' : 'clickDblclick',
+    'action': ['click', 'mousemove', 'dblclick'],
     'create' : function (path) {
         return new DiagonalArrow(path);
     },

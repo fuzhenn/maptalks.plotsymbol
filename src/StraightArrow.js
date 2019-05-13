@@ -126,7 +126,7 @@ StraightArrow.mergeOptions(options);
 StraightArrow.registerJSONType('StraightArrow');
 
 maptalks.DrawTool.registerMode('StraightArrow', {
-    'action' : 'clickDblclick',
+    action: ['click', 'mousemove', 'dblclick'],
     create(path) {
         return new StraightArrow(path);
     },

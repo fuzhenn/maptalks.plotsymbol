@@ -66,7 +66,7 @@ DoveTailDiagonalArrow.mergeOptions(options);
 DoveTailDiagonalArrow.registerJSONType('DoveTailDiagonalArrow');
 
 maptalks.DrawTool.registerMode('DoveTailDiagonalArrow', {
-    'action' : 'clickDblclick',
+    'action': ['click', 'mousemove', 'dblclick'],
     'create' : function (path) {
         return new DoveTailDiagonalArrow(path);
     },
