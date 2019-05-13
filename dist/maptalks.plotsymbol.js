@@ -1,10 +1,10 @@
 /*!
- * maptalks.plotsymbol v0.2.0
+ * maptalks.plotsymbol v0.3.0
  * LICENSE : MIT
- * (c) 2016-2017 maptalks.org
+ * (c) 2016-2019 maptalks.org
  */
 /*!
- * requires maptalks@>=0.36.2 
+ * requires maptalks@>=0.44.0 
  */
 (function (global, factory) {
 	typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('maptalks')) :
@@ -628,7 +628,7 @@ StraightArrow.mergeOptions(options);
 StraightArrow.registerJSONType('StraightArrow');
 
 maptalks.DrawTool.registerMode('StraightArrow', {
-    'action': 'clickDblclick',
+    action: ['click', 'mousemove', 'dblclick'],
     create: function create(path) {
         return new StraightArrow(path);
     },
@@ -726,7 +726,7 @@ DiagonalArrow.mergeOptions(options$1);
 DiagonalArrow.registerJSONType('DiagonalArrow');
 
 maptalks.DrawTool.registerMode('DiagonalArrow', {
-    'action': 'clickDblclick',
+    'action': ['click', 'mousemove', 'dblclick'],
     'create': function create(path) {
         return new DiagonalArrow(path);
     },
@@ -810,7 +810,7 @@ DoveTailDiagonalArrow.mergeOptions(options$2);
 DoveTailDiagonalArrow.registerJSONType('DoveTailDiagonalArrow');
 
 maptalks.DrawTool.registerMode('DoveTailDiagonalArrow', {
-    'action': 'clickDblclick',
+    'action': ['click', 'mousemove', 'dblclick'],
     'create': function create(path) {
         return new DoveTailDiagonalArrow(path);
     },
@@ -828,6 +828,6 @@ exports.DoveTailDiagonalArrow = DoveTailDiagonalArrow;
 
 Object.defineProperty(exports, '__esModule', { value: true });
 
-typeof console !== 'undefined' && console.log('maptalks.plotsymbol v0.2.0, requires maptalks@>=0.36.2.');
+typeof console !== 'undefined' && console.log('maptalks.plotsymbol v0.3.0, requires maptalks@>=0.44.0.');
 
 })));
