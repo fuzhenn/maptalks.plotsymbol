@@ -1,5 +1,5 @@
 import * as maptalks from 'maptalks';
-import PlotUtils from './PlotUtils';
+import { getArrowBody } from '../PlotUtils';
 import StraightArrow from './StraightArrow';
 
 /**
@@ -56,7 +56,7 @@ export default class DiagonalArrow extends StraightArrow {
         const length = this._get2DLength();
         const lineWidth = length * this.options['widthRatio'];
 
-        const arrowPairs = PlotUtils.getArrowBody(points, lineWidth, this.getMap(), 0.15, length);
+        const arrowPairs = getArrowBody(points, lineWidth, this.getMap(), 0.15, length);
         const h1 = arrowPairs[0][arrowPairs[0].length - 1],
             h2 = arrowPairs[1][arrowPairs[1].length - 1];
         const arrowHead = this._getArrowHead(h1, h2, points[points.length - 1], lineWidth * 0.3, 2);

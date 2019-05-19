@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <title>Map tools - Draw tool to draw geometries</title>
     <meta name="viewport" content="initial-scale=1.0, user-scalable=no, width=device-width">
-    <script src="https://cdn.jsdelivr.net/npm/maptalks@<2.0.0/dist/maptalks.min.js"></script>
+    <script src="../node_modules/maptalks/dist/maptalks.js"></script>
     <script src="../dist/maptalks.plotsymbol.js"></script>
     <link type="text/css" rel="stylesheet" href="https://cdn.jsdelivr.net/npm/maptalks@<2.0.0/dist/maptalks.css">
     <style>
@@ -31,7 +31,6 @@
             'subdomains'  : ['a','b','c','d','e']
         })
       });
-
       var layer = new maptalks.VectorLayer('vector').addTo(map);
 
       var drawTool = new maptalks.DrawTool({
@@ -42,17 +41,20 @@
         }
       }).addTo(map).disable();
 
+      var drawTool = new maptalks.DrawTool({
+        mode: 'DoubleArrow'
+      }).addTo(map).disable();
       drawTool.on('drawend', function (param) {
         drawTool.disable();
         var geometry = param.geometry;
         layer.addGeometry(geometry);
-        geometry.startEdit();
+        // geometry.startEdit();
         geometry.updateSymbol({
             'polygonFill' : '#ff0'
         });
       });
 
-      var items = ['StraightArrow', 'DiagonalArrow', 'DoveTailDiagonalArrow'].map(function (value) {
+      var items = ['DoubleArrow','ClosedCurve', 'FreePolygon','Sector', 'StraightArrow','DiagonalArrow','DoveTailDiagonalArrow','Rectangle','QuadBezierCurve','CubicBezierCurve'].map(function (value) {
         return {
           item: value,
           click: function () {

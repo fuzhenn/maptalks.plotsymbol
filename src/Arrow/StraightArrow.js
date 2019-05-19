@@ -1,6 +1,6 @@
 import * as maptalks from 'maptalks';
 import Point from 'point-geometry';
-import PlotUtils from './PlotUtils';
+import { getArrowBody } from '../PlotUtils';
 
 /**
  * @property {Object} options
@@ -57,7 +57,7 @@ export default class StraightArrow extends maptalks.Curve {
         const length = this._get2DLength();
         const lineWidth = length * this.options['widthRatio'];
 
-        const arrowPairs = PlotUtils.getArrowBody(points, lineWidth, this.getMap());
+        const arrowPairs = getArrowBody(points, lineWidth, this.getMap());
         const h1 = arrowPairs[0][arrowPairs[0].length - 1],
             h2 = arrowPairs[1][arrowPairs[1].length - 1];
         const arrowHead = this._getArrowHead(h1, h2, points[points.length - 1], lineWidth);
