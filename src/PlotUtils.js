@@ -79,6 +79,9 @@ export const getArrowBody = (vertexes, lineWidth, map, ratio, arrowLength) => {
         } else {
             currentNormal = normal;
         }
+        if (isNaN(currentNormal.x) || isNaN(currentNormal.y)) {
+            continue;
+        }
         pair = getPlotPair(vertexes[i], currentNormal, arrowWidth, map);
         upPlots.push(pair[0]);
         downPlots.push(pair[1]);

@@ -1,9 +1,3 @@
-/**
- * Created by FDD on 2017/12/31.
- * @desc 双箭头
- * @Inherits maptalks.Polygon
- */
-
 import * as maptalks from 'maptalks';
 import * as Constants from '../Constants';
 

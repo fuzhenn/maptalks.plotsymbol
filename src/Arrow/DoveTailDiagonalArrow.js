@@ -58,7 +58,6 @@ export default class DoveTailDiagonalArrow extends DiagonalArrow {
         ctx.lineTo(xc, yc);
         ctx.closePath();
     }
-
 }
 
 DoveTailDiagonalArrow.mergeOptions(options);

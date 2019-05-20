@@ -1,9 +1,3 @@
-/**
- * Created by FDD on 2017/12/26.
- * @desc 扇形
- * @Inherits maptalks.Polygon
- */
-
 import * as maptalks from 'maptalks';
 import { getSectorPoints, pointDistance, getAzimuth } from '../PlotUtils';
 const Coordinate = maptalks.Coordinate;

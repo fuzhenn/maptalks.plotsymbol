@@ -1,8 +1,3 @@
-/**
- * Created by FDD on 2017/12/26.
- * @desc 闭合曲面
- * @Inherits maptalks.Polygon
- */
 import * as maptalks from 'maptalks';
 import * as Constants from '../Constants';
 import { getBisectorNormals, getCubicValue } from '../PlotUtils';
