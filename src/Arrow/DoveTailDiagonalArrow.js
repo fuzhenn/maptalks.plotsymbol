@@ -48,13 +48,18 @@ export default class DoveTailDiagonalArrow extends DiagonalArrow {
     }
 
     _closeArrow(ctx, last, first) {
+        const pitch = this.getMap().getPitch();
         const t1 = new Point(last.x, last.y);
         const t2 = new Point(first.x, first.y);
         const m = new Point(t1.x + t2.x, t1.y + t2.y).mult(1 / 2);
         const dist = t1.dist(t2);
         const normal = t1.sub(t2)._unit()._perp();
-        const xc = m.x + dist * 0.618 * normal.x,
-            yc = m.y + dist * 0.618 * normal.y;
+        const max = 0.618;
+        const min = 0.1;
+        const maxPitch = 80;//map's default max pitch
+        const ratio = max - pitch * (max - min) / maxPitch;
+        const xc = m.x + dist * ratio * normal.x,
+            yc = m.y + dist * ratio * normal.y;
         ctx.lineTo(xc, yc);
         ctx.closePath();
     }

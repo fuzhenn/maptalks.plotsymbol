@@ -31,30 +31,32 @@
             'subdomains'  : ['a','b','c','d','e']
         })
       });
-      var layer = new maptalks.VectorLayer('vector').addTo(map);
+      var layer = new maptalks.VectorLayer('vector',{
+        enableSimplify : false
+      }).addTo(map);
 
       var drawTool = new maptalks.DrawTool({
-        mode: 'Point',
-        symbol : {
-            'polygonFill' : '#f00',
-            'polygonOpacity' : 0.5
-        }
-      }).addTo(map).disable();
-
-      var drawTool = new maptalks.DrawTool({
-        mode: 'DoubleArrow'
+          mode: 'Point',
+          symbol : {
+              'lineColor' : '#e84',
+              'polygonFill' : '#f00',
+              'polygonOpacity' : 0.5,
+              'polygonPatternFile' : 'patternFile.png'
+          }
       }).addTo(map).disable();
       drawTool.on('drawend', function (param) {
-        drawTool.disable();
-        var geometry = param.geometry;
-        layer.addGeometry(geometry);
-        // geometry.startEdit();
-        geometry.updateSymbol({
-            'polygonFill' : '#ff0'
-        });
+          drawTool.disable();
+          var geometry = param.geometry;
+          layer.addGeometry(geometry);
+          geometry.updateSymbol({
+              'polygonFill' : '#ff0'
+          });
+          geometry.on('dblclick', e => {
+            e.target.startEdit();
+          });
       });
 
-      var items = ['DoubleArrow','ClosedCurve', 'FreePolygon','Sector', 'StraightArrow','DiagonalArrow','DoveTailDiagonalArrow','Rectangle','QuadBezierCurve','CubicBezierCurve'].map(function (value) {
+      var items = ['DoubleArrow','ClosedCurve', 'FreeHandPolygon','Sector', 'StraightArrow','DiagonalArrow','DoveTailDiagonalArrow','Rectangle','Polygon','LineString','Circle', 'QuadBezierCurve','CubicBezierCurve'].map(function (value) {
         return {
           item: value,
           click: function () {
