@@ -1,15 +1,13 @@
-import * as maptalks from 'maptalks';
+import { Coordinate, Util, DrawTool, LineString } from 'maptalks';
 import * as Constants from '../Constants';
+import InterprolationGeometry from '../InterpolationGeometry';
 import { getBisectorNormals, getCubicValue } from '../PlotUtils';
 
-const Coordinate = maptalks.Coordinate;
-class ClosedCurve extends maptalks.Polygon {
-    constructor(coordinates, points, options = {}) {
-        super(options);
+class ClosedCurve extends InterprolationGeometry {
+    constructor(coordinates, options = {}) {
+        super(coordinates, options);
         this.type = 'ClosedCurve';
         this._offset = 0.3;
-        this._coordinates = [];
-        this._points = points || [];
         if (coordinates) {
             this.setCoordinates(coordinates);
         }
@@ -29,12 +27,15 @@ class ClosedCurve extends maptalks.Polygon {
      * @private
      */
     _generate() {
-        const count = this._points.length;
-        if (count < 2) return;
-        if (count === 2) {
-            this.setCoordinates([this._points]);
+        const coordinates = this.getCoordinates();
+        const count = coordinates.length;
+        if (count < 2) {
+            return null;
+        } else if (count === 2) {
+            this.setCoordinates(coordinates);
+            return null;
         } else {
-            const points = Coordinate.toNumberArrays(this._points);
+            const points = Coordinate.toNumberArrays(coordinates);
             points.push(points[0], points[1]);
             let [normals, pList] = [[], []];
             for (let i = 0; i < points.length - 2; i++) {
@@ -53,23 +54,11 @@ class ClosedCurve extends maptalks.Polygon {
                 }
                 pList.push(pnt2);
             }
-            this.setCoordinates([Coordinate.toCoordinates(pList)]);
+            pList = pList.map(p => {
+                return new Coordinate(p);
+            });
+            return pList;
         }
-    }
-
-    setPoints(coordinates) {
-        this._points = coordinates || [];
-        if (this._points.length >= 1) {
-            this._generate();
-        }
-    }
-
-    /**
-     * 获取控制点
-     * @returns {Array|*}
-     */
-    getPoints() {
-        return this._points;
     }
 
     _exportGeoJSONGeometry() {
@@ -81,7 +70,7 @@ class ClosedCurve extends maptalks.Polygon {
     }
 
     _toJSON(options) {
-        const opts = maptalks.Util.extend({}, options);
+        const opts = Util.extend({}, options);
         const coordinates = this.getCoordinates();
         opts.geometry = false;
         const feature = this.toGeoJSON(opts);
@@ -91,14 +80,13 @@ class ClosedCurve extends maptalks.Polygon {
         return {
             'feature': feature,
             'subType': 'ClosedCurve',
-            'coordinates': coordinates,
-            'points': this.getPoints()
+            'coordinates': coordinates
         };
     }
 
     static fromJSON(json) {
         const feature = json['feature'];
-        const _closedCurve = new ClosedCurve(json['coordinates'], json['points'], json['options']);
+        const _closedCurve = new ClosedCurve(json['coordinates'], json['options']);
         _closedCurve.setProperties(feature['properties']);
         return _closedCurve;
     }
@@ -106,16 +94,44 @@ class ClosedCurve extends maptalks.Polygon {
 
 ClosedCurve.registerJSONType('ClosedCurve');
 
-maptalks.DrawTool.registerMode('ClosedCurve', {
+DrawTool.registerMode('ClosedCurve', {
     action: ['click', 'mousemove', 'dblclick'],
     create(path) {
-        return new ClosedCurve(path);
+        return new LineString(path);
     },
     update(path, geometry) {
-        geometry.setPoints(path);
+        const symbol = geometry.getSymbol();
+        geometry.setCoordinates(path);
+
+        const layer = geometry.getLayer();
+        if (layer) {
+            let doublearrow = layer.getGeometryById('closedcurve');
+            if (!doublearrow && path.length >= 3) {
+                doublearrow = new ClosedCurve([path], {
+                    'id': 'closedcurve'
+                });
+                doublearrow.addTo(layer);
+                if (symbol) {
+                    doublearrow.setSymbol(symbol);
+                }
+                geometry.updateSymbol({
+                    lineOpacity : 0
+                });
+            }
+            if (doublearrow) {
+                doublearrow.setCoordinates(path);
+                geometry.updateSymbol({
+                    lineOpacity : 0
+                });
+            }
+        }
     },
     generate(geometry) {
-        return geometry;
+        const symbol = geometry.getSymbol();
+        symbol.lineOpacity = 1;
+        return new ClosedCurve(geometry.getCoordinates(), {
+            'symbol': symbol
+        });
     }
 });
 

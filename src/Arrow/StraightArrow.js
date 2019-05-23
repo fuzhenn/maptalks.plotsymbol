@@ -47,6 +47,13 @@ export default class StraightArrow extends maptalks.Curve {
         };
     }
 
+    startEdit(options = {}) {
+        options.newVertexHandleSymbol = {
+            opacity : 0
+        };
+        return super.startEdit(options);
+    }
+
     _getPaintParams() {
         const map = this.getMap();
         const zoomScale = map.getGLScale();

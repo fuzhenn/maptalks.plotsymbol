@@ -1,13 +1,11 @@
-import * as maptalks from 'maptalks';
+import { Coordinate, Util, DrawTool, LineString } from 'maptalks';
+import InterprolationGeometry from '../InterpolationGeometry';
 import { getSectorPoints, pointDistance, getAzimuth } from '../PlotUtils';
-const Coordinate = maptalks.Coordinate;
 
-class Sector extends maptalks.Polygon {
-    constructor(coordinates, points, options = {}) {
-        super(options);
+class Sector extends InterprolationGeometry {
+    constructor(coordinates, options = {}) {
+        super(coordinates, options);
         this.type = 'Sector';
-        this._coordinates = [];
-        this._points = points || [];
         if (coordinates) {
             this.setCoordinates(coordinates);
         }
@@ -26,12 +24,14 @@ class Sector extends maptalks.Polygon {
      * @private
      */
     _generate() {
-        const count = this._points.length;
-        let _points = Coordinate.toNumberArrays(this._points);
-        if (count < 2) return;
-        if (count === 2) {
-            this.setCoordinates([this._points]);
-        } else {
+        let points = [];
+        const coordinates = this.getCoordinates();
+        const count = coordinates.length;
+        const _points = Coordinate.toNumberArrays(coordinates);
+        if (count <= 2) {
+            this.setCoordinates(_points);
+            return null;
+        } else if (count === 3) {
             let [center, pnt2, pnt3] = [_points[0], _points[1], _points[2]];
             const measurer = this._getMeasurer();
             const radius = pointDistance(measurer, pnt2, center);
@@ -39,29 +39,13 @@ class Sector extends maptalks.Polygon {
             let endAngle = getAzimuth(pnt3, center);
             let pList = getSectorPoints(measurer, center, radius, startAngle, endAngle);
             pList.push(center, pList[0]);
-            this.setCoordinates([
-                Coordinate.toCoordinates(pList)
-            ]);
+            points = pList.map(p => {
+                return new Coordinate(p);
+            });
+        } else if (count > 3) {
+            this._drawTool.endDraw();
         }
-    }
-
-    /**
-     * 更新控制点
-     * @param coordinates
-     */
-    setPoints(coordinates) {
-        this._points = coordinates || [];
-        if (this._points.length >= 1) {
-            this._generate();
-        }
-    }
-
-    /**
-     * 获取控制点
-     * @returns {Array|*}
-     */
-    getPoints() {
-        return this._points;
+        return points;
     }
 
     _exportGeoJSONGeometry() {
@@ -73,7 +57,7 @@ class Sector extends maptalks.Polygon {
     }
 
     _toJSON(options) {
-        const opts = maptalks.Util.extend({}, options);
+        const opts = Util.extend({}, options);
         const coordinates = this.getCoordinates();
         opts.geometry = false;
         const feature = this.toGeoJSON(opts);
@@ -83,14 +67,13 @@ class Sector extends maptalks.Polygon {
         return {
             'feature': feature,
             'subType': 'Sector',
-            'coordinates': coordinates,
-            'points': this.getPoints()
+            'coordinates': coordinates
         };
     }
 
     static fromJSON(json) {
         const feature = json['feature'];
-        const _geometry = new Sector(json['coordinates'], json['points'], json['options']);
+        const _geometry = new Sector(json['coordinates'], json['options']);
         _geometry.setProperties(feature['properties']);
         return _geometry;
     }
@@ -98,16 +81,53 @@ class Sector extends maptalks.Polygon {
 
 Sector.registerJSONType('Sector');
 
-maptalks.DrawTool.registerMode('Sector', {
+DrawTool.registerMode('Sector', {
     action: ['click', 'mousemove', 'dblclick'],
     create(path) {
-        return new Sector(path);
+        // return new Sector(path);
+        return new LineString(path);
     },
-    update(path, geometry) {
-        geometry.setPoints(path);
+    update(path, geometry, e) {
+        // geometry.setCoordinates(path);
+        const symbol = geometry.getSymbol();
+        geometry.setCoordinates(path);
+
+        const layer = geometry.getLayer();
+        if (layer) {
+            let sector = layer.getGeometryById('sector');
+            if (!sector && path.length >= 3) {
+                sector = new Sector(path, {
+                    'id': 'sector'
+                });
+                sector._drawTool = e.drawTool;
+                sector.addTo(layer);
+                const pSymbol = Util.extendSymbol(symbol, {
+                });
+                if (pSymbol) {
+                    sector.setSymbol(pSymbol);
+                }
+                geometry.updateSymbol({
+                    lineOpacity : 0
+                });
+            }
+            if (sector) {
+                sector.setCoordinates(path);
+                geometry.updateSymbol({
+                    lineOpacity : 0
+                });
+            }
+        }
     },
     generate(geometry) {
-        return geometry;
+        const symbol = geometry.getSymbol();
+        symbol.lineOpacity = 1;
+        let coordinates = geometry.getCoordinates();
+        if (coordinates.length > 3) {
+            coordinates = coordinates.slice(0, 3);
+        }
+        return new Sector(coordinates, {
+            'symbol': symbol
+        });
     }
 });
 

@@ -1,4 +1,5 @@
-import * as maptalks from 'maptalks';
+import { Coordinate, Util, DrawTool, LineString } from 'maptalks';
+import InterprolationGeometry from '../InterpolationGeometry';
 import * as Constants from '../Constants';
 
 import {
@@ -12,7 +13,6 @@ import {
   getAngleOfThreePoints
 } from '../PlotUtils';
 
-const Coordinate = maptalks.Coordinate;
 
 const _options = {
     headHeightFactor: 0.25,
@@ -21,68 +21,63 @@ const _options = {
     neckWidthFactor: 0.15
 };
 
-class DoubleArrow extends maptalks.Polygon {
-    constructor(coordinates, points, options = {}) {
-        super(options);
+class DoubleArrow extends InterprolationGeometry {
+    constructor(coordinates, options = {}) {
+        super(coordinates, options);
         this.type = 'DoubleArrow';
-        this._coordinates = [];
         this.connetPoints = [];
         this.symmetricalPoints = [];
-        this._points = points || [];
-        if (coordinates) {
-            this.setCoordinates(coordinates);
-        }
     }
 
     /**
      * 处理插值
      */
     _generate() {
-        try {
-            const count = this._points.length;
-            const _points = Coordinate.toNumberArrays(this._points);
-            if (count < 2) return;
-            if (count === 2) {
-                this.setCoordinates([this._points]);
-            } else {
-                let [pnt1, pnt2, pnt3] = [_points[0], _points[1], _points[2]];
-                if (count === 3) {
-                    this.symmetricalPoints = DoubleArrow.getSymmetricalPoints(pnt1, pnt2, pnt3);
-                    this.connetPoints = Mid(pnt1, pnt2);
-                } else if (count === 4) {
-                    this.symmetricalPoints = _points[3];
-                    this.connetPoints = Mid(pnt1, pnt2);
-                } else {
-                    this.symmetricalPoints = _points[3];
-                    this.connetPoints = _points[4];
-                }
-                let [leftArrowPoints, rightArrowPoints] = [undefined, undefined];
-                if (isClockWise(pnt1, pnt2, pnt3)) {
-                    leftArrowPoints = DoubleArrow.getArrowPoints(pnt1, this.connetPoints, this.symmetricalPoints, false);
-                    rightArrowPoints = DoubleArrow.getArrowPoints(this.connetPoints, pnt2, pnt3, true);
-                } else {
-                    leftArrowPoints = DoubleArrow.getArrowPoints(pnt2, this.connetPoints, pnt3, false);
-                    rightArrowPoints = DoubleArrow.getArrowPoints(this.connetPoints, pnt1, this.symmetricalPoints, true);
-                }
-                let m = leftArrowPoints.length;
-                let t = (m - 5) / 2;
-                let llBodyPoints = leftArrowPoints.slice(0, t);
-                let lArrowPoints = leftArrowPoints.slice(t, t + 5);
-                let lrBodyPoints = leftArrowPoints.slice(t + 5, m);
-                let rlBodyPoints = rightArrowPoints.slice(0, t);
-                let rArrowPoints = rightArrowPoints.slice(t, t + 5);
-                let rrBodyPoints = rightArrowPoints.slice(t + 5, m);
-                rlBodyPoints = getBezierPoints(rlBodyPoints);
-                let bodyPoints = getBezierPoints(rrBodyPoints.concat(llBodyPoints.slice(1)));
-                lrBodyPoints = getBezierPoints(lrBodyPoints);
-                let Points = rlBodyPoints.concat(rArrowPoints, bodyPoints, lArrowPoints, lrBodyPoints);
-                this.setCoordinates([
-                    Coordinate.toCoordinates(Points)
-                ]);
+        let points = [];
+        const coordinates = this.getCoordinates();
+        const count = coordinates.length;
+        const _points = Coordinate.toNumberArrays(coordinates);
+        if (count < 2) {
+            return null;
+        } else if (count === 2) {
+            this.setCoordinates(coordinates);
+            return null;
+        } else {
+            let [pnt1, pnt2, pnt3] = [_points[0], _points[1], _points[2]];
+            if (count === 3) {
+                this.symmetricalPoints = DoubleArrow.getSymmetricalPoints(pnt1, pnt2, pnt3);
+                this.connetPoints = Mid(pnt1, pnt2);
+            } else if (count === 4) {
+                this.symmetricalPoints = _points[3];
+                this.connetPoints = Mid(pnt1, pnt2);
+            } else if (count > 4) {
+                this._drawTool.disable();
             }
-        } catch (e) {
-            console.log(e);
+            let [leftArrowPoints, rightArrowPoints] = [undefined, undefined];
+            if (isClockWise(pnt1, pnt2, pnt3)) {
+                leftArrowPoints = DoubleArrow.getArrowPoints(pnt1, this.connetPoints, this.symmetricalPoints, false);
+                rightArrowPoints = DoubleArrow.getArrowPoints(this.connetPoints, pnt2, pnt3, true);
+            } else {
+                leftArrowPoints = DoubleArrow.getArrowPoints(pnt2, this.connetPoints, pnt3, false);
+                rightArrowPoints = DoubleArrow.getArrowPoints(this.connetPoints, pnt1, this.symmetricalPoints, true);
+            }
+            let m = leftArrowPoints.length;
+            let t = (m - 5) / 2;
+            let llBodyPoints = leftArrowPoints.slice(0, t);
+            let lArrowPoints = leftArrowPoints.slice(t, t + 5);
+            let lrBodyPoints = leftArrowPoints.slice(t + 5, m);
+            let rlBodyPoints = rightArrowPoints.slice(0, t);
+            let rArrowPoints = rightArrowPoints.slice(t, t + 5);
+            let rrBodyPoints = rightArrowPoints.slice(t + 5, m);
+            rlBodyPoints = getBezierPoints(rlBodyPoints);
+            let bodyPoints = getBezierPoints(rrBodyPoints.concat(llBodyPoints.slice(1)));
+            lrBodyPoints = getBezierPoints(lrBodyPoints);
+            points = rlBodyPoints.concat(rArrowPoints, bodyPoints, lArrowPoints, lrBodyPoints);
+            points = points.map(p => {
+                return new Coordinate(p);
+            });
         }
+        return points;
     }
 
     /**
@@ -91,25 +86,6 @@ class DoubleArrow extends maptalks.Polygon {
      */
     getPlotType() {
         return this.type;
-    }
-
-    /**
-    * 获取控制点
-    * @returns {Array|*}
-    */
-    getPoints() {
-        return this._points;
-    }
-
-   /**
-   * set point
-   * @param coordinates
-   */
-    setPoints(coordinates) {
-        this._points = !coordinates ? [] : coordinates;
-        if (this._points.length >= 1) {
-            this._generate();
-        }
     }
 
     _exportGeoJSONGeometry() {
@@ -121,7 +97,7 @@ class DoubleArrow extends maptalks.Polygon {
     }
 
     _toJSON(options) {
-        const opts = maptalks.Util.extend({}, options);
+        const opts = Util.extend({}, options);
         const coordinates = this.getCoordinates();
         opts.geometry = false;
         const feature = this.toGeoJSON(opts);
@@ -131,8 +107,7 @@ class DoubleArrow extends maptalks.Polygon {
         return {
             'feature': feature,
             'subType': 'DoubleArrow',
-            'coordinates': coordinates,
-            'points': this.getPoints()
+            'coordinates': coordinates
         };
     }
 
@@ -259,7 +234,7 @@ class DoubleArrow extends maptalks.Polygon {
 
     static fromJSON(json) {
         const feature = json['feature'];
-        const doubleArrow = new DoubleArrow(json['coordinates'], json['points'], json['options']);
+        const doubleArrow = new DoubleArrow(json['coordinates'], json['options']);
         doubleArrow.setProperties(feature['properties']);
         return doubleArrow;
     }
@@ -267,16 +242,48 @@ class DoubleArrow extends maptalks.Polygon {
 
 DoubleArrow.registerJSONType('DoubleArrow');
 
-maptalks.DrawTool.registerMode('DoubleArrow', {
+DrawTool.registerMode('DoubleArrow', {
     action: ['click', 'mousemove', 'dblclick'],
     create(path) {
-        return new DoubleArrow(path);
+        return new LineString(path);
     },
-    update(path, geometry) {
-        geometry.setPoints(path);
+    update(path, geometry, e) {
+        const symbol = geometry.getSymbol();
+        geometry.setCoordinates(path);
+        const layer = geometry.getLayer();
+        if (layer) {
+            let doublearrow = layer.getGeometryById('doublearrow');
+            if (!doublearrow && path.length >= 3) {
+                doublearrow = new DoubleArrow(path, {
+                    'id': 'doublearrow'
+                });
+                doublearrow._drawTool = e.drawTool;
+                doublearrow.addTo(layer);
+                if (symbol) {
+                    doublearrow.setSymbol(symbol);
+                }
+                geometry.updateSymbol({
+                    lineOpacity : 0
+                });
+            }
+            if (doublearrow) {
+                doublearrow.setCoordinates(path);
+                geometry.updateSymbol({
+                    lineOpacity : 0
+                });
+            }
+        }
     },
     generate(geometry) {
-        return geometry;
+        const symbol = geometry.getSymbol();
+        symbol.lineOpacity = 1;
+        let coordinates = geometry.getCoordinates();
+        if (coordinates.length > 4) {
+            coordinates = coordinates.slice(0, 4);
+        }
+        return new DoubleArrow(coordinates, {
+            'symbol': symbol
+        });
     }
 });
 
