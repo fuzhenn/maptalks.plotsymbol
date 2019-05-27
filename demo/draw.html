@@ -5,8 +5,8 @@
     <title>Map tools - Draw tool to draw geometries</title>
     <meta name="viewport" content="initial-scale=1.0, user-scalable=no, width=device-width">
     <link type="text/css" rel="stylesheet" href="https://cdn.jsdelivr.net/npm/maptalks/dist/maptalks.css">
-    <script type="text/javascript" src="maptalks.js"></script>
-    <script src="../dist/maptalks.plotsymbol.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/maptalks/dist/maptalks.js"></script>
+    <script src="./maptalks.plotsymbol.js"></script>
     <style>
     html,body{
         margin:0px;
@@ -30,89 +30,89 @@
         })
       });
       var layer = new maptalks.VectorLayer('vector',{
-        enableSimplify : false
+            enableSimplify : false
       }).addTo(map);
       
       var drawTool = new maptalks.DrawTool({
-          mode: 'Point',
-          symbol : {
-              'lineColor' : '#e84',
-              'polygonFill' : '#f00',
-              'polygonOpacity' : 0.5,
-              'polygonPatternFile' : drawFillStyle('#ff0', 1, 20)
-          }
+            mode: 'Point',
+            symbol : {
+                'lineColor' : '#e84',
+                'polygonFill' : '#f00',
+                'polygonOpacity' : 0.5,
+                'polygonPatternFile' : drawFillStyle('#ff0', 1, 20)
+            }
       }).addTo(map).disable();
       drawTool.on('drawend', function (param) {
-          drawTool.disable();
-          var geometry = param.geometry;
-          layer.addGeometry(geometry);
-          geometry.updateSymbol({
-              'polygonFill' : '#ff0'
-          });
-          geometry.on('dblclick', e => {
-              e.target.startEdit();
-          });
+            drawTool.disable();
+            var geometry = param.geometry;
+            layer.addGeometry(geometry);
+            geometry.updateSymbol({
+                'polygonFill' : '#ff0'
+            });
+            geometry.on('dblclick', e => {
+                e.target.startEdit();
+            });
       });
 
       var items = ['DoubleArrow','ClosedCurve','Sector', 'FreeHandPolygon', 'StraightArrow','DiagonalArrow','DoveTailDiagonalArrow','Rectangle','Polygon','LineString','Circle', 'QuadBezierCurve','CubicBezierCurve'].map(function (value) {
-          return {
-              item: value,
-              click: function () {
-                  drawTool.setMode(value).enable();
-              }
-          };
+            return {
+                item: value,
+                click: function () {
+                    drawTool.setMode(value).enable();
+                }
+            };
       });
-      // var doublearrow = new maptalks.Curve([]).addTo(layer);
+
       var toolbar = new maptalks.control.Toolbar({
-          items: [
-              {
-                  item: 'Shape',
-                  children: items
-              },
-              {
-                  item: 'Disable',
-                  click: function () {
-                      drawTool.disable();
-                  }
-              },
-              {
-                  item: 'Clear',
-                  click: function () {
-                      layer.clear();
-                  }
-              }
-          ]
+            items: [
+                {
+                    item: 'Shape',
+                    children: items
+                },
+                {
+                    item: 'Disable',
+                    click: function () {
+                        drawTool.disable();
+                    }
+                },
+                {
+                    item: 'Clear',
+                    click: function () {
+                        layer.clear();
+                    }
+                }
+            ]
       }).addTo(map);
       //态势线的填充样式，可以自定义线颜色，线宽，线的间隔
       function drawFillStyle(lineColor, lineWidth, spacing){
-          var color = lineColor || '#ccc';
-          var width = lineWidth || 1.0;
-          var space = spacing || 15;
-          var canvas = document.createElement('canvas');
-          canvas.width = spacing * 3 + lineWidth;
-          canvas.height = spacing * 3 + lineWidth;
-          return drawGrid(canvas, color, width, spacing,spacing);
+            var color = lineColor || '#ccc';
+            var width = lineWidth || 1.0;
+            var space = spacing || 15;
+            var canvas = document.createElement('canvas');
+            canvas.width = spacing * 3 + lineWidth;
+            canvas.height = spacing * 3 + lineWidth;
+            return drawGrid(canvas, color, width, spacing,spacing);
       }
 
       function drawGrid(canvas,color,lineWidth, stepx,stepy){
-          var context = canvas.getContext("2d");
-          context.strokeStyle = color;
-          context.lineWidth = lineWidth;
-          for(var i = stepx + 0.5;i < context.canvas.width; i += stepx){
-              context.beginPath();
-              context.moveTo(i,0);
-              context.lineTo(i,context.canvas.height);
-              context.stroke();
-          }
+            var context = canvas.getContext("2d");
+            context.strokeStyle = color;
+            context.lineWidth = lineWidth;
+            for(var i = stepx + 0.5;i < context.canvas.width; i += stepx){
+                context.beginPath();
+                context.moveTo(i,0);
+                context.lineTo(i,context.canvas.height);
+                context.stroke();
+            }
 
-          for(var i = stepy+0.5;i<context.canvas.height;i+=stepy){
-              context.beginPath();
-              context.moveTo(0,i);
-              context.lineTo(context.canvas.width,i);
-              context.stroke();
-          }
-          const data = canvas.toDataURL('image/png', 1);
-          return data;
+            for(var i = stepy+0.5;i<context.canvas.height;i+=stepy){
+                context.beginPath();
+                context.moveTo(0,i);
+                context.lineTo(context.canvas.width,i);
+                context.stroke();
+            }
+            const data = canvas.toDataURL('image/png', 1);
+            return data;
       }
 
     </script>
