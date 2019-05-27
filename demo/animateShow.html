@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Plot Symbol Demo</title>
+    <script src="https://cdn.jsdelivr.net/npm/maptalks@<2.0.0/dist/maptalks.min.js"></script>
+    <script src="../dist/maptalks.plotsymbol.js"></script>
+    <link type="text/css" rel="stylesheet" href="https://cdn.jsdelivr.net/npm/maptalks@<2.0.0/dist/maptalks.css">
+    <style>
+        #map { width: 1100px; height: 800px; }
+    </style>
+</head>
+<body>
+<div id="map"></div>
+<script>
+    var map = new maptalks.Map("map",{
+        center :  [116.71446, 23.38773],
+        zoom :  9,
+        attributionControl : {
+            'content' : '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, &copy; <a href="https://carto.com/attributions">CARTO</a>'
+        },
+        baseLayer : new maptalks.TileLayer("base",{
+            'urlTemplate' : 'http://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}.png',
+            'subdomains'  : ['a','b','c','d','e']
+        })
+    });
+
+    var coordinates = [[116.31, 23.38], [116.77, 23.38], [116.77, 23.11]];
+    var symbol = {
+        'lineColor'     : '#000',
+        'polygonFill'   : '#f00',
+        'polygonOpacity' : 0.6
+    };
+
+    var arrow0 = new maptalks.StraightArrow(coordinates, { 'symbol' : symbol });
+    var arrow1 = new maptalks.DiagonalArrow(coordinates, { 'symbol' : symbol }).translate([0, 0.3]);
+    var arrow2 = new maptalks.DoveTailDiagonalArrow(coordinates, { 'symbol' : symbol }).translate([0, 0.6]);
+
+     var v = new maptalks.VectorLayer('v1')
+        .addGeometry(arrow0, arrow1, arrow2)
+        .addTo(map);
+
+    var animOptions = {
+        duration : 1000,
+        easing : 'out'
+    };
+    arrow0.animateShow(animOptions);
+    arrow1.animateShow(animOptions);
+    arrow2.animateShow(animOptions);
+
+</script>
+</body>
+</html>
+
