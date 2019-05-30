@@ -1,10 +1,10 @@
 /*!
- * maptalks.plotsymbol v0.4.1
+ * maptalks.plotsymbol v0.4.2
  * LICENSE : MIT
  * (c) 2016-2019 maptalks.org
  */
 /*!
- * requires maptalks@>=0.44.0 
+ * requires maptalks@>=0.44.1 
  */
 import { Canvas, Coordinate, Curve, DrawTool, LineString, Point, Util } from 'maptalks';
 
@@ -408,6 +408,10 @@ var possibleConstructorReturn = function (self, call) {
   return call && (typeof call === "object" || typeof call === "function") ? call : self;
 };
 
+/**
+ * There are many interpolation method
+ * based on code finished by @sakitam-fdd https://github.com/sakitam-fdd/maptalks.plot.git
+ */
 var Coordinate$1 = Coordinate;
 var Canvas$1 = Canvas;
 
@@ -1771,12 +1775,13 @@ DrawTool.registerMode('DoubleArrow', {
         geometry.setCoordinates(path);
         var layer = geometry.getLayer();
         if (layer) {
+            var map = layer.getMap();
             var doublearrow = layer.getGeometryById('doublearrow');
             if (!doublearrow && path.length >= 3) {
                 doublearrow = new DoubleArrow(path, {
                     'id': 'doublearrow'
                 });
-                doublearrow._drawTool = e.drawTool;
+                doublearrow._drawTool = e.drawTool || map['_map_tool'];
                 doublearrow.addTo(layer);
                 if (symbol) {
                     doublearrow.setSymbol(symbol);
@@ -2062,12 +2067,13 @@ DrawTool.registerMode('Sector', {
 
         var layer = geometry.getLayer();
         if (layer) {
+            var map = layer.getMap();
             var sector = layer.getGeometryById('sector');
             if (!sector && path.length >= 3) {
                 sector = new Sector(path, {
                     'id': 'sector'
                 });
-                sector._drawTool = e.drawTool;
+                sector._drawTool = e.drawTool || map['_map_tool'];
                 sector.addTo(layer);
                 var pSymbol = Util.extendSymbol(symbol, {});
                 if (pSymbol) {
@@ -2100,4 +2106,4 @@ DrawTool.registerMode('Sector', {
 
 export { StraightArrow, DiagonalArrow, DoveTailDiagonalArrow, DoubleArrow, ClosedCurve, Sector };
 
-typeof console !== 'undefined' && console.log('maptalks.plotsymbol v0.4.1, requires maptalks@>=0.44.0.');
+typeof console !== 'undefined' && console.log('maptalks.plotsymbol v0.4.2, requires maptalks@>=0.44.1.');
