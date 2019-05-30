@@ -1195,30 +1195,30 @@ var StraightArrow = function (_maptalks$Curve) {
      */
 
 
-    StraightArrow.prototype._getArrowHead = function _getArrowHead(h1, h2, points, lineWidth, lineRatio, f1, f2, hScale1, hScale2, h1h2Ration) {
+    StraightArrow.prototype._getArrowHead = function _getArrowHead(h1, h2, points, lineWidth, lineRatio, f1, f2, hScale1, hScale2, h1h2Ratio) {
         var arrowHead = this._getArrowHeadPoint(h1, h2, points[points.length - 1], lineWidth * lineRatio, f1, hScale1);
         var vertex01 = new Point((arrowHead[0].x + arrowHead[1].x) / 2, (arrowHead[0].y + arrowHead[1].y) / 2);
         var head0 = this._getArrowHeadPoint(arrowHead[0], arrowHead[1], vertex01, lineWidth * lineRatio, f2, hScale2)[0];
         var vertex21 = new Point((arrowHead[2].x + arrowHead[1].x) / 2, (arrowHead[2].y + arrowHead[1].y) / 2);
         var head2 = this._getArrowHeadPoint(arrowHead[2], arrowHead[1], vertex21, lineWidth * lineRatio, f2, hScale2)[0];
+        var arrowPoints = void 0;
         if (points.length === 2) {
-            arrowHead = [h1, head0, arrowHead[1], head2, h2];
+            arrowPoints = [h1, head0, arrowHead[1], head2, h2];
         } else {
             var besierPoints = paintSmoothLine(null, points, null, 0.8, false);
             var controlPoint = new Point(besierPoints[besierPoints.length - 1].prevCtrlPoint);
             //计算控制点与最后一个点构成的延长线上的某一点
             var lastPoint = points[points.length - 1];
             var sub = lastPoint.sub(controlPoint);
-            if (!sub.x && !sub.y) {
-                return null;
+            if (sub.x === 0 && sub.y === 0) {
+                return [h1, head0, arrowHead[1], head2, h2];
             }
-            //const subLength = Math.sqrt(sub.x * sub.x + sub.y * sub.y);
             var h1h2Length = h1.distanceTo(h2);
             var direction = sub.unit();
-            var headPoint = new Point(lastPoint.x + direction.x * h1h2Length * h1h2Ration, lastPoint.y + direction.y * h1h2Length * h1h2Ration);
-            arrowHead = [h1, head0, headPoint, head2, h2];
+            var headPoint = new Point(lastPoint.x + direction.x * h1h2Length * h1h2Ratio, lastPoint.y + direction.y * h1h2Length * h1h2Ratio);
+            arrowPoints = [h1, head0, headPoint, head2, h2];
         }
-        return arrowHead;
+        return arrowPoints;
     };
 
     StraightArrow.prototype._getArrowHeadPoint = function _getArrowHeadPoint(h1, h2, vertex, lineWidth, f, hScale) {

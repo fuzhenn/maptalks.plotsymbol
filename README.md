@@ -1,6 +1,31 @@
 # maptalks.plotsymbol
 
+[![CircleCI](https://circleci.com/gh/fuzhenn/maptalks.plotsymbol.svg?style=svg)](https://circleci.com/gh/fuzhenn/maptalks.plotsymbol)
+
 A maptalks plugin to support plot symbols, e.g.  DoubleArrow, ClosedCurve, Sector, DiagonalArrow, StraightArrow, etc.
+![screenshot](https://user-images.githubusercontent.com/5208386/58606045-90747000-82cc-11e9-9f28-73f9be783342.png)
+
+All support geometries are listed below:
+* DoubleArrow
+* ClosedCurve
+* Sector
+* StraightArrow
+* DiagonalArrow
+* DoveTailDiagonalArrow
+* Point
+* ArcCurve
+* BoxZoom
+* FreeHandCircle
+* FreeHandEllipse
+* FreeHandLineString
+* FreeHandRectangle
+* FreeHandPolygon
+* Rectangle
+* Polygon
+* LineString
+* Circle
+* QuadBezierCurve
+* CubicBezierCurve
 
 ## Examples
 
@@ -22,7 +47,8 @@ As a plugin, ```maptalks.plotsymbol``` must be loaded after ```maptalks.js``` in
 <script type="text/javascript" src="https://unpkg.com/maptalks.plotsymbol/dist/maptalks.plotsymbol.min.js"></script>
 <script>
     var drawTool = new maptalks.DrawTool({
-        mode: 'DoubleArrow',
+        mode: 'DoubleArrow
+
         symbol : {
             'lineColor' : '#e84',
             'polygonFill' : '#f00',

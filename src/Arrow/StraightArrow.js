@@ -118,30 +118,30 @@ export default class StraightArrow extends maptalks.Curve {
      * @param  {Number} lineWidth    - line width
      * @return {maptalks.Point[]}
      */
-    _getArrowHead(h1, h2, points, lineWidth, lineRatio, f1, f2, hScale1, hScale2, h1h2Ration) {
-        let arrowHead = this._getArrowHeadPoint(h1, h2, points[points.length - 1], lineWidth * lineRatio, f1, hScale1);
+    _getArrowHead(h1, h2, points, lineWidth, lineRatio, f1, f2, hScale1, hScale2, h1h2Ratio) {
+        const arrowHead = this._getArrowHeadPoint(h1, h2, points[points.length - 1], lineWidth * lineRatio, f1, hScale1);
         const vertex01 = new maptalks.Point((arrowHead[0].x + arrowHead[1].x) / 2, (arrowHead[0].y + arrowHead[1].y) / 2);
         const head0 = this._getArrowHeadPoint(arrowHead[0], arrowHead[1], vertex01, lineWidth * lineRatio, f2, hScale2)[0];
         const vertex21 = new maptalks.Point((arrowHead[2].x + arrowHead[1].x) / 2, (arrowHead[2].y + arrowHead[1].y) / 2);
         const head2 = this._getArrowHeadPoint(arrowHead[2], arrowHead[1], vertex21, lineWidth * lineRatio, f2, hScale2)[0];
+        let arrowPoints;
         if (points.length === 2) {
-            arrowHead = [h1, head0, arrowHead[1], head2, h2];
+            arrowPoints = [h1, head0, arrowHead[1], head2, h2];
         } else {
             const besierPoints = paintSmoothLine(null, points, null, 0.8, false);
             const controlPoint = new maptalks.Point(besierPoints[besierPoints.length - 1].prevCtrlPoint);
             //计算控制点与最后一个点构成的延长线上的某一点
             const lastPoint = points[points.length - 1];
             const sub = lastPoint.sub(controlPoint);
-            if (!sub.x && !sub.y) {
-                return null;
+            if (sub.x === 0 && sub.y === 0) {
+                return [h1, head0, arrowHead[1], head2, h2];
             }
-            //const subLength = Math.sqrt(sub.x * sub.x + sub.y * sub.y);
             const h1h2Length = h1.distanceTo(h2);
             const direction = sub.unit();
-            const headPoint = new maptalks.Point(lastPoint.x + direction.x * h1h2Length * h1h2Ration, lastPoint.y + direction.y * h1h2Length * h1h2Ration);
-            arrowHead = [h1, head0, headPoint, head2, h2];
+            const headPoint = new maptalks.Point(lastPoint.x + direction.x * h1h2Length * h1h2Ratio, lastPoint.y + direction.y * h1h2Length * h1h2Ratio);
+            arrowPoints = [h1, head0, headPoint, head2, h2];
         }
-        return arrowHead;
+        return arrowPoints;
     }
 
     _getArrowHeadPoint(h1, h2, vertex, lineWidth, f, hScale) {
