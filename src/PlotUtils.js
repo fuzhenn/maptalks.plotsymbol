@@ -1,3 +1,8 @@
+
+/**
+ * There are many interpolation method
+ * based on code finished by @sakitam-fdd https://github.com/sakitam-fdd/maptalks.plot.git
+ */
 import * as Constants from './Constants';
 import * as maptalks from 'maptalks';
 import Point from 'point-geometry';

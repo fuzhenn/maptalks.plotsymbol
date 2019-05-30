@@ -254,12 +254,13 @@ DrawTool.registerMode('DoubleArrow', {
         geometry.setCoordinates(path);
         const layer = geometry.getLayer();
         if (layer) {
+            const map = layer.getMap();
             let doublearrow = layer.getGeometryById('doublearrow');
             if (!doublearrow && path.length >= 3) {
                 doublearrow = new DoubleArrow(path, {
                     'id': 'doublearrow'
                 });
-                doublearrow._drawTool = e.drawTool;
+                doublearrow._drawTool = e.drawTool || map['_map_tool'];
                 doublearrow.addTo(layer);
                 if (symbol) {
                     doublearrow.setSymbol(symbol);
