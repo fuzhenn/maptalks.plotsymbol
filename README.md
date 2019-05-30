@@ -6,7 +6,7 @@ A maptalks plugin to support plot symbols, e.g.  DoubleArrow, ClosedCurve, Secto
 
 ## Examples
 
-* A demo of [maptlaks.plotsymbol](http://maptalks.org/maptalks.plotsymbol/demo/).
+* A demo of [maptlaks.plotsymbol](https://fuzhenn.github.io/maptalks.plotsymbol/demo/).
 
 ## Install
   
