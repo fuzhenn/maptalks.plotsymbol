@@ -1,5 +1,5 @@
 /*!
- * maptalks.plotsymbol v0.4.0
+ * maptalks.plotsymbol v0.4.1
  * LICENSE : MIT
  * (c) 2016-2019 maptalks.org
  */
@@ -2100,4 +2100,4 @@ DrawTool.registerMode('Sector', {
 
 export { StraightArrow, DiagonalArrow, DoveTailDiagonalArrow, DoubleArrow, ClosedCurve, Sector };
 
-typeof console !== 'undefined' && console.log('maptalks.plotsymbol v0.4.0, requires maptalks@>=0.44.0.');
+typeof console !== 'undefined' && console.log('maptalks.plotsymbol v0.4.1, requires maptalks@>=0.44.0.');
