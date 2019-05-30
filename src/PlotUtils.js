@@ -2,7 +2,7 @@ import * as Constants from './Constants';
 import * as maptalks from 'maptalks';
 import Point from 'point-geometry';
 const Coordinate = maptalks.Coordinate;
-
+const Canvas = maptalks.Canvas;
 
 /**
  *                  nextNormal
@@ -48,8 +48,8 @@ export const getArrowBody = (vertexes, lineWidth, map, ratio, arrowLength) => {
     let currentLen = 0;
     const upPlots = [],
         downPlots = [];
-    var pair;
-    // var dx, dy;
+    let pair;
+    // let dx, dy;
     let current, prev, next;
     let normal, currentNormal, nextNormal;
     for (let i = 1, l = vertexes.length; i < l; i++) {
@@ -121,7 +121,8 @@ export const pointDistance = (measurer, pnt1, pnt2) => {
  * @returns {null}
  */
 export const getSectorPoints = (measurer, center, radius, startAngle, endAngle, numberOfPoints = 100) => {
-    let [dx, dy, points, angleDiff] = [null, null, [], (endAngle - startAngle)];
+    let [dx, dy, angleDiff] = [null, null, endAngle - startAngle];
+    const points = [];
     angleDiff = ((angleDiff < 0) ? (angleDiff + (Math.PI * 2)) : angleDiff);
     for (let i = 0; i < numberOfPoints; i++) {
         const rad = angleDiff * i / numberOfPoints + startAngle;
@@ -181,21 +182,21 @@ export const Mid = (point1, point2) => {
  */
 export const getIntersectPoint = (pntA, pntB, pntC, pntD) => {
     if (pntA[1] === pntB[1]) {
-        let f = (pntD[0] - pntC[0]) / (pntD[1] - pntC[1]);
-        let x = f * (pntA[1] - pntC[1]) + pntC[0];
-        let y = pntA[1];
+        const f = (pntD[0] - pntC[0]) / (pntD[1] - pntC[1]);
+        const x = f * (pntA[1] - pntC[1]) + pntC[0];
+        const y = pntA[1];
         return [x, y];
     }
     if (pntC[1] === pntD[1]) {
-        let e = (pntB[0] - pntA[0]) / (pntB[1] - pntA[1]);
-        let x = e * (pntC[1] - pntA[1]) + pntA[0];
-        let y = pntC[1];
+        const e = (pntB[0] - pntA[0]) / (pntB[1] - pntA[1]);
+        const x = e * (pntC[1] - pntA[1]) + pntA[0];
+        const y = pntC[1];
         return [x, y];
     }
-    let e = (pntB[0] - pntA[0]) / (pntB[1] - pntA[1]);
-    let f = (pntD[0] - pntC[0]) / (pntD[1] - pntC[1]);
-    let y = (e * pntA[1] - pntA[0] - f * pntC[1] + pntC[0]) / (e - f);
-    let x = e * y - e * pntA[1] + pntA[0];
+    const e = (pntB[0] - pntA[0]) / (pntB[1] - pntA[1]);
+    const f = (pntD[0] - pntC[0]) / (pntD[1] - pntC[1]);
+    const y = (e * pntA[1] - pntA[0] - f * pntC[1] + pntC[0]) / (e - f);
+    const x = e * y - e * pntA[1] + pntA[0];
     return [x, y];
 };
 
@@ -206,10 +207,10 @@ export const getIntersectPoint = (pntA, pntB, pntC, pntD) => {
  * @param point3
  */
 export const getCircleCenterOfThreePoints = (point1, point2, point3) => {
-    let pntA = [(point1[0] + point2[0]) / 2, (point1[1] + point2[1]) / 2];
-    let pntB = [pntA[0] - point1[1] + point2[1], pntA[1] + point1[0] - point2[0]];
-    let pntC = [(point1[0] + point3[0]) / 2, (point1[1] + point3[1]) / 2];
-    let pntD = [pntC[0] - point1[1] + point3[1], pntC[1] + point1[0] - point3[0]];
+    const pntA = [(point1[0] + point2[0]) / 2, (point1[1] + point2[1]) / 2];
+    const pntB = [pntA[0] - point1[1] + point2[1], pntA[1] + point1[0] - point2[0]];
+    const pntC = [(point1[0] + point3[0]) / 2, (point1[1] + point3[1]) / 2];
+    const pntD = [pntC[0] - point1[1] + point3[1], pntC[1] + point1[0] - point3[0]];
     return getIntersectPoint(pntA, pntB, pntC, pntD);
 };
 
@@ -221,7 +222,7 @@ export const getCircleCenterOfThreePoints = (point1, point2, point3) => {
  */
 export const getAzimuth = (startPoint, endPoint) => {
     let azimuth;
-    let angle = Math.asin(Math.abs(endPoint[1] - startPoint[1]) / (MathDistance(startPoint, endPoint)));
+    const angle = Math.asin(Math.abs(endPoint[1] - startPoint[1]) / (MathDistance(startPoint, endPoint)));
     if (endPoint[1] >= startPoint[1] && endPoint[0] >= startPoint[0]) {
         azimuth = angle + Math.PI;
     } else if (endPoint[1] >= startPoint[1] && endPoint[0] < startPoint[0]) {
@@ -242,7 +243,7 @@ export const getAzimuth = (startPoint, endPoint) => {
  * @returns {number}
  */
 export const getAngleOfThreePoints = (pntA, pntB, pntC) => {
-    let angle = getAzimuth(pntB, pntA) - getAzimuth(pntB, pntC);
+    const angle = getAzimuth(pntB, pntA) - getAzimuth(pntB, pntC);
     return ((angle < 0) ? (angle + Math.PI * 2) : angle);
 };
 
@@ -268,12 +269,12 @@ export const isClockWise = (pnt1, pnt2, pnt3) => {
  */
 export const getCubicValue = (t, startPnt, cPnt1, cPnt2, endPnt) => {
     t = Math.max(Math.min(t, 1), 0);
-    let [tp, t2] = [(1 - t), (t * t)];
-    let t3 = t2 * t;
-    let tp2 = tp * tp;
-    let tp3 = tp2 * tp;
-    let x = (tp3 * startPnt[0]) + (3 * tp2 * t * cPnt1[0]) + (3 * tp * t2 * cPnt2[0]) + (t3 * endPnt[0]);
-    let y = (tp3 * startPnt[1]) + (3 * tp2 * t * cPnt1[1]) + (3 * tp * t2 * cPnt2[1]) + (t3 * endPnt[1]);
+    const [tp, t2] = [(1 - t), (t * t)];
+    const t3 = t2 * t;
+    const tp2 = tp * tp;
+    const tp3 = tp2 * tp;
+    const x = (tp3 * startPnt[0]) + (3 * tp2 * t * cPnt1[0]) + (3 * tp * t2 * cPnt2[0]) + (t3 * endPnt[0]);
+    const y = (tp3 * startPnt[1]) + (3 * tp2 * t * cPnt1[1]) + (3 * tp * t2 * cPnt2[1]) + (t3 * endPnt[1]);
     return [x, y];
 };
 
@@ -287,10 +288,10 @@ export const getCubicValue = (t, startPnt, cPnt1, cPnt2, endPnt) => {
  * @returns {[*,*]}
  */
 export const getThirdPoint = (startPnt, endPnt, angle, distance, clockWise) => {
-    let azimuth = getAzimuth(startPnt, endPnt);
-    let alpha = clockWise ? (azimuth + angle) : (azimuth - angle);
-    let dx = distance * Math.cos(alpha);
-    let dy = distance * Math.sin(alpha);
+    const azimuth = getAzimuth(startPnt, endPnt);
+    const alpha = clockWise ? (azimuth + angle) : (azimuth - angle);
+    const dx = distance * Math.cos(alpha);
+    const dy = distance * Math.sin(alpha);
     return ([endPnt[0] + dx, endPnt[1] + dy]);
 };
 
@@ -303,7 +304,8 @@ export const getThirdPoint = (startPnt, endPnt, angle, distance, clockWise) => {
  * @returns {null}
  */
 export const getArcPoints = (center, radius, startAngle, endAngle) => {
-    let [x, y, points, angleDiff] = [null, null, [], (endAngle - startAngle)];
+    let [x, y, angleDiff] = [null, null, endAngle - startAngle];
+    const points = [];
     angleDiff = ((angleDiff < 0) ? (angleDiff + (Math.PI * 2)) : angleDiff);
     for (let i = 0; i < 200; i++) {
         const angle = startAngle + angleDiff * i / 200;
@@ -324,16 +326,16 @@ export const getArcPoints = (center, radius, startAngle, endAngle) => {
 export const getNormal = (pnt1, pnt2, pnt3) => {
     let dX1 = pnt1[0] - pnt2[0];
     let dY1 = pnt1[1] - pnt2[1];
-    let d1 = Math.sqrt(dX1 * dX1 + dY1 * dY1);
+    const d1 = Math.sqrt(dX1 * dX1 + dY1 * dY1);
     dX1 /= d1;
     dY1 /= d1;
     let dX2 = pnt3[0] - pnt2[0];
     let dY2 = pnt3[1] - pnt2[1];
-    let d2 = Math.sqrt(dX2 * dX2 + dY2 * dY2);
+    const d2 = Math.sqrt(dX2 * dX2 + dY2 * dY2);
     dX2 /= d2;
     dY2 /= d2;
-    let uX = dX1 + dX2;
-    let uY = dY1 + dY2;
+    const uX = dX1 + dX2;
+    const uY = dY1 + dY2;
     return [uX, uY];
 };
 
@@ -346,13 +348,13 @@ export const getNormal = (pnt1, pnt2, pnt3) => {
  * @returns {[*,*]}
  */
 export const getBisectorNormals = (t, pnt1, pnt2, pnt3) => {
-    let normal = getNormal(pnt1, pnt2, pnt3);
+    const normal = getNormal(pnt1, pnt2, pnt3);
     let [bisectorNormalRight, bisectorNormalLeft, dt, x, y] = [null, null, null, null, null];
-    let dist = Math.sqrt(normal[0] * normal[0] + normal[1] * normal[1]);
-    let uX = normal[0] / dist;
-    let uY = normal[1] / dist;
-    let d1 = MathDistance(pnt1, pnt2);
-    let d2 = MathDistance(pnt2, pnt3);
+    const dist = Math.sqrt(normal[0] * normal[0] + normal[1] * normal[1]);
+    const uX = normal[0] / dist;
+    const uY = normal[1] / dist;
+    const d1 = MathDistance(pnt1, pnt2);
+    const d2 = MathDistance(pnt2, pnt3);
     if (dist > Constants.ZERO_TOLERANCE) {
         if (isClockWise(pnt1, pnt2, pnt3)) {
             dt = t * d1;
@@ -390,24 +392,25 @@ export const getBisectorNormals = (t, pnt1, pnt2, pnt3) => {
  * @returns {[*,*]}
  */
 export const getLeftMostControlPoint = (controlPoints, t) => {
-    let [pnt1, pnt2, pnt3, controlX, controlY] = [controlPoints[0], controlPoints[1], controlPoints[2], null, null];
-    let pnts = getBisectorNormals(0, pnt1, pnt2, pnt3);
-    let normalRight = pnts[0];
-    let normal = getNormal(pnt1, pnt2, pnt3);
-    let dist = Math.sqrt(normal[0] * normal[0] + normal[1] * normal[1]);
+    const [pnt1, pnt2, pnt3] = [controlPoints[0], controlPoints[1], controlPoints[2]];
+    let controlX, controlY;
+    const pnts = getBisectorNormals(0, pnt1, pnt2, pnt3);
+    const normalRight = pnts[0];
+    const normal = getNormal(pnt1, pnt2, pnt3);
+    const dist = Math.sqrt(normal[0] * normal[0] + normal[1] * normal[1]);
     if (dist > Constants.ZERO_TOLERANCE) {
-        let mid = Mid(pnt1, pnt2);
-        let pX = pnt1[0] - mid[0];
-        let pY = pnt1[1] - mid[1];
-        let d1 = MathDistance(pnt1, pnt2);
-        let n = 2.0 / d1;
-        let nX = -n * pY;
-        let nY = n * pX;
-        let a11 = nX * nX - nY * nY;
-        let a12 = 2 * nX * nY;
-        let a22 = nY * nY - nX * nX;
-        let dX = normalRight[0] - mid[0];
-        let dY = normalRight[1] - mid[1];
+        const mid = Mid(pnt1, pnt2);
+        const pX = pnt1[0] - mid[0];
+        const pY = pnt1[1] - mid[1];
+        const d1 = MathDistance(pnt1, pnt2);
+        const n = 2.0 / d1;
+        const nX = -n * pY;
+        const nY = n * pX;
+        const a11 = nX * nX - nY * nY;
+        const a12 = 2 * nX * nY;
+        const a22 = nY * nY - nX * nX;
+        const dX = normalRight[0] - mid[0];
+        const dY = normalRight[1] - mid[1];
         controlX = mid[0] + a11 * dX + a12 * dY;
         controlY = mid[1] + a12 * dX + a22 * dY;
     } else {
@@ -424,28 +427,28 @@ export const getLeftMostControlPoint = (controlPoints, t) => {
  * @returns {[*,*]}
  */
 export const getRightMostControlPoint = (controlPoints, t) => {
-    let count = controlPoints.length;
-    let pnt1 = controlPoints[count - 3];
-    let pnt2 = controlPoints[count - 2];
-    let pnt3 = controlPoints[count - 1];
-    let pnts = getBisectorNormals(0, pnt1, pnt2, pnt3);
-    let normalLeft = pnts[1];
-    let normal = getNormal(pnt1, pnt2, pnt3);
-    let dist = Math.sqrt(normal[0] * normal[0] + normal[1] * normal[1]);
+    const count = controlPoints.length;
+    const pnt1 = controlPoints[count - 3];
+    const pnt2 = controlPoints[count - 2];
+    const pnt3 = controlPoints[count - 1];
+    const pnts = getBisectorNormals(0, pnt1, pnt2, pnt3);
+    const normalLeft = pnts[1];
+    const normal = getNormal(pnt1, pnt2, pnt3);
+    const dist = Math.sqrt(normal[0] * normal[0] + normal[1] * normal[1]);
     let [controlX, controlY] = [null, null];
     if (dist > Constants.ZERO_TOLERANCE) {
-        let mid = Mid(pnt2, pnt3);
-        let pX = pnt3[0] - mid[0];
-        let pY = pnt3[1] - mid[1];
-        let d1 = MathDistance(pnt2, pnt3);
-        let n = 2.0 / d1;
-        let nX = -n * pY;
-        let nY = n * pX;
-        let a11 = nX * nX - nY * nY;
-        let a12 = 2 * nX * nY;
-        let a22 = nY * nY - nX * nX;
-        let dX = normalLeft[0] - mid[0];
-        let dY = normalLeft[1] - mid[1];
+        const mid = Mid(pnt2, pnt3);
+        const pX = pnt3[0] - mid[0];
+        const pY = pnt3[1] - mid[1];
+        const d1 = MathDistance(pnt2, pnt3);
+        const n = 2.0 / d1;
+        const nX = -n * pY;
+        const nY = n * pX;
+        const a11 = nX * nX - nY * nY;
+        const a12 = 2 * nX * nY;
+        const a22 = nY * nY - nX * nX;
+        const dX = normalLeft[0] - mid[0];
+        const dY = normalLeft[1] - mid[1];
         controlX = mid[0] + a11 * dX + a12 * dY;
         controlY = mid[1] + a12 * dX + a22 * dY;
     } else {
@@ -462,14 +465,15 @@ export const getRightMostControlPoint = (controlPoints, t) => {
  * @returns {null}
  */
 export const getCurvePoints = (t, controlPoints) => {
-    let leftControl = getLeftMostControlPoint(controlPoints, t);
-    let [pnt1, pnt2, pnt3, normals, points] = [null, null, null, [leftControl], []];
+    const leftControl = getLeftMostControlPoint(controlPoints, t);
+    let [pnt1, pnt2, pnt3, normals] = [null, null, null, [leftControl]];
+    const points = [];
     for (let i = 0; i < controlPoints.length - 2; i++) {
         [pnt1, pnt2, pnt3] = [controlPoints[i], controlPoints[i + 1], controlPoints[i + 2]];
-        let normalPoints = getBisectorNormals(t, pnt1, pnt2, pnt3);
+        const normalPoints = getBisectorNormals(t, pnt1, pnt2, pnt3);
         normals = normals.concat(normalPoints);
     }
-    let rightControl = getRightMostControlPoint(controlPoints, t);
+    const rightControl = getRightMostControlPoint(controlPoints, t);
     if (rightControl) {
         normals.push(rightControl);
     }
@@ -478,7 +482,7 @@ export const getCurvePoints = (t, controlPoints) => {
         pnt2 = controlPoints[i + 1];
         points.push(pnt1);
         for (let t = 0; t < Constants.FITTING_COUNT; t++) {
-            let pnt = getCubicValue(t / Constants.FITTING_COUNT, pnt1, normals[i * 2], normals[i * 2 + 1], pnt2);
+            const pnt = getCubicValue(t / Constants.FITTING_COUNT, pnt1, normals[i * 2], normals[i * 2 + 1], pnt2);
             points.push(pnt);
         }
         points.push(pnt2);
@@ -537,14 +541,14 @@ export const getBezierPoints = function (points) {
     if (points.length <= 2) {
         return points;
     } else {
-        let bezierPoints = [];
-        let n = points.length - 1;
+        const bezierPoints = [];
+        const n = points.length - 1;
         for (let t = 0; t <= 1; t += 0.01) {
             let [x, y] = [0, 0];
             for (let index = 0; index <= n; index++) {
-                let factor = getBinomialFactor(n, index);
-                let a = Math.pow(t, index);
-                let b = Math.pow((1 - t), (n - index));
+                const factor = getBinomialFactor(n, index);
+                const a = Math.pow(t, index);
+                const b = Math.pow((1 - t), (n - index));
                 x += factor * a * b * points[index][0];
                 y += factor * a * b * points[index][1];
             }
@@ -582,14 +586,14 @@ export const getQBSplinePoints = points => {
     if (points.length <= 2) {
         return points;
     } else {
-        let [n, bSplinePoints] = [2, []];
-        let m = points.length - n - 1;
+        const [n, bSplinePoints] = [2, []];
+        const m = points.length - n - 1;
         bSplinePoints.push(points[0]);
         for (let i = 0; i <= m; i++) {
             for (let t = 0; t <= 1; t += 0.05) {
                 let [x, y] = [0, 0];
                 for (let k = 0; k <= n; k++) {
-                    let factor = getQuadricBSplineFactor(k, t);
+                    const factor = getQuadricBSplineFactor(k, t);
                     x += factor * points[i + k][0];
                     y += factor * points[i + k][1];
                 }
@@ -644,4 +648,165 @@ export const merge = (a, b) => {
         }
     }
     return a;
+};
+
+//和maptalks.Canvas.paintSmoothLine类似，只不过去掉了begainPath的逻辑
+export const paintSmoothLine = (ctx, points, lineOpacity, smoothValue, draw, close, tailIdx, tailRatio) => {
+    //推算 cubic 贝塞尔曲线片段的起终点和控制点坐标
+    //t0: 片段起始比例 0-1
+    //t1: 片段结束比例 0-1
+    //x1, y1, 曲线起点
+    //bx1, by1, bx2, by2，曲线控制点
+    //x2, y2  曲线终点
+    //结果是曲线片段的起点，2个控制点坐标和终点坐标
+    //https://stackoverflow.com/questions/878862/drawing-part-of-a-b%C3%A9zier-curve-by-reusing-a-basic-b%C3%A9zier-curve-function/879213#879213
+    function interpolate(t0, t1, x1, y1, bx1, by1, bx2, by2, x2, y2) {
+        const u0 = 1.0 - t0;
+        const u1 = 1.0 - t1;
+
+        const qxa =  x1 * u0 * u0 + bx1 * 2 * t0 * u0 + bx2 * t0 * t0;
+        const qxb =  x1 * u1 * u1 + bx1 * 2 * t1 * u1 + bx2 * t1 * t1;
+        const qxc = bx1 * u0 * u0 + bx2 * 2 * t0 * u0 +  x2 * t0 * t0;
+        const qxd = bx1 * u1 * u1 + bx2 * 2 * t1 * u1 +  x2 * t1 * t1;
+
+        const qya =  y1 * u0 * u0 + by1 * 2 * t0 * u0 + by2 * t0 * t0;
+        const qyb =  y1 * u1 * u1 + by1 * 2 * t1 * u1 + by2 * t1 * t1;
+        const qyc = by1 * u0 * u0 + by2 * 2 * t0 * u0 +  y2 * t0 * t0;
+        const qyd = by1 * u1 * u1 + by2 * 2 * t1 * u1 +  y2 * t1 * t1;
+
+        // const xa = qxa * u0 + qxc * t0;
+        const xb = qxa * u1 + qxc * t1;
+        const xc = qxb * u0 + qxd * t0;
+        const xd = qxb * u1 + qxd * t1;
+
+        // const ya = qya * u0 + qyc * t0;
+        const yb = qya * u1 + qyc * t1;
+        const yc = qyb * u0 + qyd * t0;
+        const yd = qyb * u1 + qyd * t1;
+
+        return [xb, yb, xc, yc, xd, yd];
+    }
+
+    //from http://www.antigrain.com/research/bezier_interpolation/
+    function getCubicControlPoints(x0, y0, x1, y1, x2, y2, x3, y3, smoothValue, t) {
+        // Assume we need to calculate the control
+        // points between (x1,y1) and (x2,y2).
+        // Then x0,y0 - the previous vertex,
+        //      x3,y3 - the next one.
+        const xc1 = (x0 + x1) / 2.0, yc1 = (y0 + y1) / 2.0;
+        const xc2 = (x1 + x2) / 2.0, yc2 = (y1 + y2) / 2.0;
+        const xc3 = (x2 + x3) / 2.0, yc3 = (y2 + y3) / 2.0;
+
+        const len1 = Math.sqrt((x1 - x0) * (x1 - x0) + (y1 - y0) * (y1 - y0));
+        const len2 = Math.sqrt((x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1));
+        const len3 = Math.sqrt((x3 - x2) * (x3 - x2) + (y3 - y2) * (y3 - y2));
+
+        const k1 = len1 / (len1 + len2);
+        const k2 = len2 / (len2 + len3);
+
+        const xm1 = xc1 + (xc2 - xc1) * k1, ym1 = yc1 + (yc2 - yc1) * k1;
+
+        const xm2 = xc2 + (xc3 - xc2) * k2, ym2 = yc2 + (yc3 - yc2) * k2;
+
+        // Resulting control points. Here smoothValue is mentioned
+        // above coefficient K whose value should be in range [0...1].
+        const ctrl1X = xm1 + (xc2 - xm1) * smoothValue + x1 - xm1,
+            ctrl1Y = ym1 + (yc2 - ym1) * smoothValue + y1 - ym1,
+
+            ctrl2X = xm2 + (xc2 - xm2) * smoothValue + x2 - xm2,
+            ctrl2Y = ym2 + (yc2 - ym2) * smoothValue + y2 - ym2;
+
+        const ctrlPoints = [ctrl1X, ctrl1Y, ctrl2X, ctrl2Y];
+        if (t < 1) {
+            return interpolate(0, t, x1, y1, ctrl1X, ctrl1Y, ctrl2X, ctrl2Y, x2, y2);
+        } else {
+            return ctrlPoints;
+        }
+    }
+
+    function path(ctx, points, lineOpacity, fillOpacity, lineDashArray) {
+        if (!maptalks.Util.isArrayHasData(points)) {
+            return;
+        }
+        Canvas._path(ctx, points, lineDashArray, lineOpacity);
+        Canvas._stroke(ctx, lineOpacity);
+    }
+
+    if (!points) {
+        return null;
+    }
+    if (points.length <= 2 || !smoothValue) {
+        if (draw) {
+            path(ctx, points, lineOpacity);
+        }
+        return null;
+    }
+
+    let count = points.length;
+    let l = close ? count : count - 1;
+
+    if (tailRatio !== undefined) l -= Math.max(l - tailIdx - 1, 0);
+    let preCtrlPoints;
+    for (let i = 0; i < l; i++) {
+        const x1 = points[i].x, y1 = points[i].y;
+
+        let x0, y0, x2, y2, x3, y3;
+        if (i - 1 < 0) {
+            if (!close) {
+                x0 = points[i + 1].x;
+                y0 = points[i + 1].y;
+            } else {
+                x0 = points[l - 1].x;
+                y0 = points[l - 1].y;
+            }
+        } else {
+            x0 = points[i - 1].x;
+            y0 = points[i - 1].y;
+        }
+        if (i + 1 < count) {
+            x2 = points[i + 1].x;
+            y2 = points[i + 1].y;
+        } else {
+            x2 = points[i + 1 - count].x;
+            y2 = points[i + 1 - count].y;
+        }
+        if (i + 2 < count) {
+            x3 = points[i + 2].x;
+            y3 = points[i + 2].y;
+        } else if (!close) {
+            x3 = points[i].x;
+            y3 = points[i].y;
+        } else {
+            x3 = points[i + 2 - count].x;
+            y3 = points[i + 2 - count].y;
+        }
+
+        const ctrlPoints = getCubicControlPoints(x0, y0, x1, y1, x2, y2, x3, y3, smoothValue, i === l - 1 ? tailRatio : 1);
+        if (i === l - 1 && tailRatio >= 0 && tailRatio < 1) {
+            if (ctx) {
+                ctx.bezierCurveTo(ctrlPoints[0], ctrlPoints[1], ctrlPoints[2], ctrlPoints[3], ctrlPoints[4], ctrlPoints[5]);
+            }
+            points.splice(l - 1, count - (l - 1) - 1);
+            const lastPoint = new Point(ctrlPoints[4], ctrlPoints[5]);
+            lastPoint.prevCtrlPoint = new Point(ctrlPoints[2], ctrlPoints[3]);
+            points.push(lastPoint);
+            count = points.length;
+        } else if (ctx) {
+            ctx.bezierCurveTo(ctrlPoints[0], ctrlPoints[1], ctrlPoints[2], ctrlPoints[3], x2, y2);
+        }
+        points[i].nextCtrlPoint = ctrlPoints.slice(0, 2);
+        points[i].prevCtrlPoint = preCtrlPoints ? preCtrlPoints.slice(2) : null;
+        preCtrlPoints = ctrlPoints;
+    }
+    if (!close && points[1].prevCtrlPoint) {
+        points[0].nextCtrlPoint = points[1].prevCtrlPoint;
+        delete points[0].prevCtrlPoint;
+    }
+    if (!points[count - 1].prevCtrlPoint) {
+        points[count - 1].prevCtrlPoint = points[count - 2].nextCtrlPoint;
+    }
+    if (draw) {
+        Canvas._stroke(ctx, lineOpacity);
+    }
+    return points;
 };

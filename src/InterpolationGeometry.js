@@ -4,7 +4,7 @@ class InterpolationGeometry extends maptalks.Curve {
 
     startEdit(options = {}) {
         options.newVertexHandleSymbol = {
-            opacity : 0
+            opacity: 0
         };
         return super.startEdit(options);
     }
@@ -16,7 +16,7 @@ class InterpolationGeometry extends maptalks.Curve {
         if (!coordinates) {
             return null;
         }
-        var projection = this._getProjection();
+        const projection = this._getProjection();
         if (!projection) {
             return null;
         }
@@ -34,7 +34,7 @@ class InterpolationGeometry extends maptalks.Curve {
         ctx.strokeStyle = this.getSymbol()['lineColor'] || '#f00';
         ctx.beginPath();
         ctx.moveTo(points[0].x, points[0].y);
-        for (var i = 1; i < points.length; i++) {
+        for (let i = 1; i < points.length; i++) {
             ctx.lineTo(points[i].x, points[i].y);
         }
         ctx.closePath();

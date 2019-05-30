@@ -1,13 +1,18 @@
 import * as maptalks from 'maptalks';
 import Point from 'point-geometry';
-import { getArrowBody } from '../PlotUtils';
+import { getArrowBody, paintSmoothLine } from '../PlotUtils';
 
 /**
  * @property {Object} options
  */
 const options = {
-    'widthRatio' : 0.10,
-    'arrowStyle' : []
+    'widthRatio': 0.10,
+    'arrowStyle': [],
+    'tailWidthFactor': 0.1,
+    'headWidthFactor': 1,
+    'neckWidthFactor': 0.2,
+    'headAngle': Math.PI / 8.5,
+    'neckAngle': Math.PI / 13
 };
 
 /**
@@ -26,7 +31,7 @@ const options = {
  *     ],
  *     {
  *         symbol : {
- *             'lineWidth' : 5
+ *             'lineWidth': 5
  *         }
  *     }
  * ).addTo(layer);
@@ -42,14 +47,14 @@ export default class StraightArrow extends maptalks.Curve {
 
     _toJSON(options) {
         return {
-            'feature' : this.toGeoJSON(options),
-            'subType' : 'StraightArrow'
+            'feature': this.toGeoJSON(options),
+            'subType': 'StraightArrow'
         };
     }
 
     startEdit(options = {}) {
         options.newVertexHandleSymbol = {
-            opacity : 0
+            opacity: 0
         };
         return super.startEdit(options);
     }
@@ -67,8 +72,8 @@ export default class StraightArrow extends maptalks.Curve {
         const arrowPairs = getArrowBody(points, lineWidth, this.getMap());
         const h1 = arrowPairs[0][arrowPairs[0].length - 1],
             h2 = arrowPairs[1][arrowPairs[1].length - 1];
-        const arrowHead = this._getArrowHead(h1, h2, points[points.length - 1], lineWidth);
-        var plots = [];
+        const arrowHead = this._getArrowHead(h1, h2, points, lineWidth, 1, 0.8, 1.4, 2.2, 0.7, 2.3);
+        let plots = [];
         plots.push.apply(plots, arrowPairs[0]);
         plots.push.apply(plots, arrowHead);
         for (let i = arrowPairs[1].length - 1; i >= 0; i--) {
@@ -81,20 +86,21 @@ export default class StraightArrow extends maptalks.Curve {
 
     _paintOn(ctx, points, segs, lineOpacity, fillOpacity, lineDasharray) {
         ctx.beginPath();
-        var seg;
+        let seg;
         //draw body upside
-        var i = 0;
+        let i = 0;
         ctx.moveTo(points[0].x, points[0].y);
         seg = points.slice(0, segs[0]);
-        this._quadraticCurve(ctx, seg);
+        // this._quadraticCurve(ctx, seg);
+        paintSmoothLine(ctx, seg, lineOpacity, 0.7, true);
         //draw head
         i += segs[0];
         maptalks.Canvas._path(ctx, points.slice(i, i + segs[1]), lineDasharray, lineOpacity);
         //draw body downside
         i += segs[1];
-        ctx.lineTo(points[i].x, points[i].y);
         seg = points.slice(i, i + segs[2]);
-        this._quadraticCurve(ctx, seg);
+        //this._quadraticCurve(ctx, seg);
+        paintSmoothLine(ctx, seg, lineOpacity, 0.7, true);
         this._closeArrow(ctx, points[points.length - 1], points[0]);
         maptalks.Canvas._stroke(ctx, lineOpacity);
         maptalks.Canvas.fillCanvas(ctx, fillOpacity, points[0].x, points[0].y);
@@ -106,26 +112,51 @@ export default class StraightArrow extends maptalks.Curve {
 
     /**
      * Get points of arrow head
-     * @param  {maptalks.Coordinate} h1   - head point 1
-     * @param  {maptalks.Coordinate} h2   - head point 2
-     * @param  {maptalks.Coordinate} vertex - head vertex
-     * @param  {Number} lineWidth         - line width
-     * @return {maptalks.Coordinate[]}
+     * @param  {maptalks.Point} h1   - head point 1
+     * @param  {maptalks.Point} h2   - head point 2
+     * @param  {maptalks.Point} points   - all points
+     * @param  {Number} lineWidth    - line width
+     * @return {maptalks.Point[]}
      */
-    _getArrowHead(h1, h2, vertex, lineWidth, hScale) {
+    _getArrowHead(h1, h2, points, lineWidth, lineRatio, f1, f2, hScale1, hScale2, h1h2Ration) {
+        let arrowHead = this._getArrowHeadPoint(h1, h2, points[points.length - 1], lineWidth * lineRatio, f1, hScale1);
+        const vertex01 = new maptalks.Point((arrowHead[0].x + arrowHead[1].x) / 2, (arrowHead[0].y + arrowHead[1].y) / 2);
+        const head0 = this._getArrowHeadPoint(arrowHead[0], arrowHead[1], vertex01, lineWidth * lineRatio, f2, hScale2)[0];
+        const vertex21 = new maptalks.Point((arrowHead[2].x + arrowHead[1].x) / 2, (arrowHead[2].y + arrowHead[1].y) / 2);
+        const head2 = this._getArrowHeadPoint(arrowHead[2], arrowHead[1], vertex21, lineWidth * lineRatio, f2, hScale2)[0];
+        if (points.length === 2) {
+            arrowHead = [h1, head0, arrowHead[1], head2, h2];
+        } else {
+            const besierPoints = paintSmoothLine(null, points, null, 0.8, false);
+            const controlPoint = new maptalks.Point(besierPoints[besierPoints.length - 1].prevCtrlPoint);
+            //计算控制点与最后一个点构成的延长线上的某一点
+            const lastPoint = points[points.length - 1];
+            const sub = lastPoint.sub(controlPoint);
+            if (!sub.x && !sub.y) {
+                return null;
+            }
+            //const subLength = Math.sqrt(sub.x * sub.x + sub.y * sub.y);
+            const h1h2Length = h1.distanceTo(h2);
+            const direction = sub.unit();
+            const headPoint = new maptalks.Point(lastPoint.x + direction.x * h1h2Length * h1h2Ration, lastPoint.y + direction.y * h1h2Length * h1h2Ration);
+            arrowHead = [h1, head0, headPoint, head2, h2];
+        }
+        return arrowHead;
+    }
+
+    _getArrowHeadPoint(h1, h2, vertex, lineWidth, f, hScale) {
         if (!hScale) {
             hScale = 1;
         }
         h1 = new Point(h1.x, h1.y);
         h2 = new Point(h2.x, h2.y);
         const normal = h1.sub(h2)._unit();
-        const head0 = vertex.add(lineWidth * normal.x, lineWidth * normal.y);
-        const head2 = vertex.add(lineWidth * -normal.x, lineWidth * -normal.y);
+        const head0 = vertex.add(lineWidth * normal.x * f, lineWidth * normal.y * f);
+        const head2 = vertex.add(lineWidth * -normal.x * f, lineWidth * -normal.y * f);
         normal._perp()._mult(-1);
         const head1 = vertex.add(hScale * lineWidth * normal.x, hScale * lineWidth * normal.y);
         return [head0, head1, head2];
     }
-
 }
 
 StraightArrow.mergeOptions(options);
