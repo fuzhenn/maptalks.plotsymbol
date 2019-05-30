@@ -94,12 +94,13 @@ DrawTool.registerMode('Sector', {
 
         const layer = geometry.getLayer();
         if (layer) {
+            const map = layer.getMap();
             let sector = layer.getGeometryById('sector');
             if (!sector && path.length >= 3) {
                 sector = new Sector(path, {
                     'id': 'sector'
                 });
-                sector._drawTool = e.drawTool;
+                sector._drawTool = e.drawTool || map['_map_tool'];
                 sector.addTo(layer);
                 const pSymbol = Util.extendSymbol(symbol, {
                 });
