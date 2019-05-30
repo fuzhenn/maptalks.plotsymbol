@@ -6,8 +6,8 @@ import Point from 'point-geometry';
  * @property {Object} options
  */
 const options = {
-    'widthRatio' : 0.20,
-    'arrowStyle' : []
+    'widthRatio': 0.20,
+    'arrowStyle': []
 };
 
 /**
@@ -42,8 +42,8 @@ export default class DoveTailDiagonalArrow extends DiagonalArrow {
 
     _toJSON(options) {
         return {
-            'feature' : this.toGeoJSON(options),
-            'subType' : 'DoveTailDiagonalArrow'
+            'feature': this.toGeoJSON(options),
+            'subType': 'DoveTailDiagonalArrow'
         };
     }
 
@@ -71,13 +71,13 @@ DoveTailDiagonalArrow.registerJSONType('DoveTailDiagonalArrow');
 
 maptalks.DrawTool.registerMode('DoveTailDiagonalArrow', {
     'action': ['click', 'mousemove', 'dblclick'],
-    'create' : function (path) {
+    'create': function (path) {
         return new DoveTailDiagonalArrow(path);
     },
-    'update' : function (path, geometry) {
+    'update': function (path, geometry) {
         geometry.setCoordinates(path);
     },
-    'generate' : function (geometry) {
+    'generate': function (geometry) {
         return geometry;
     }
 });

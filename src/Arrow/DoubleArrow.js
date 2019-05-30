@@ -43,7 +43,7 @@ class DoubleArrow extends InterprolationGeometry {
             this.setCoordinates(coordinates);
             return null;
         } else {
-            let [pnt1, pnt2, pnt3] = [_points[0], _points[1], _points[2]];
+            const [pnt1, pnt2, pnt3] = [_points[0], _points[1], _points[2]];
             if (count === 3) {
                 this.symmetricalPoints = DoubleArrow.getSymmetricalPoints(pnt1, pnt2, pnt3);
                 this.connetPoints = Mid(pnt1, pnt2);
@@ -61,16 +61,16 @@ class DoubleArrow extends InterprolationGeometry {
                 leftArrowPoints = DoubleArrow.getArrowPoints(pnt2, this.connetPoints, pnt3, false);
                 rightArrowPoints = DoubleArrow.getArrowPoints(this.connetPoints, pnt1, this.symmetricalPoints, true);
             }
-            let m = leftArrowPoints.length;
-            let t = (m - 5) / 2;
-            let llBodyPoints = leftArrowPoints.slice(0, t);
-            let lArrowPoints = leftArrowPoints.slice(t, t + 5);
+            const m = leftArrowPoints.length;
+            const t = (m - 5) / 2;
+            const llBodyPoints = leftArrowPoints.slice(0, t);
+            const lArrowPoints = leftArrowPoints.slice(t, t + 5);
             let lrBodyPoints = leftArrowPoints.slice(t + 5, m);
             let rlBodyPoints = rightArrowPoints.slice(0, t);
-            let rArrowPoints = rightArrowPoints.slice(t, t + 5);
-            let rrBodyPoints = rightArrowPoints.slice(t + 5, m);
+            const rArrowPoints = rightArrowPoints.slice(t, t + 5);
+            const rrBodyPoints = rightArrowPoints.slice(t + 5, m);
             rlBodyPoints = getBezierPoints(rlBodyPoints);
-            let bodyPoints = getBezierPoints(rrBodyPoints.concat(llBodyPoints.slice(1)));
+            const bodyPoints = getBezierPoints(rrBodyPoints.concat(llBodyPoints.slice(1)));
             lrBodyPoints = getBezierPoints(lrBodyPoints);
             points = rlBodyPoints.concat(rArrowPoints, bodyPoints, lArrowPoints, lrBodyPoints);
             points = points.map(p => {
@@ -120,20 +120,20 @@ class DoubleArrow extends InterprolationGeometry {
      * @returns {*[]}
      */
     static getArrowPoints(pnt1, pnt2, pnt3, clockWise) {
-        let midPnt = Mid(pnt1, pnt2);
-        let len = MathDistance(midPnt, pnt3);
+        const midPnt = Mid(pnt1, pnt2);
+        const len = MathDistance(midPnt, pnt3);
         let midPnt1 = getThirdPoint(pnt3, midPnt, 0, len * 0.3, true);
         let midPnt2 = getThirdPoint(pnt3, midPnt, 0, len * 0.5, true);
         midPnt1 = getThirdPoint(midPnt, midPnt1, Constants.HALF_PI, len / 5, clockWise);
         midPnt2 = getThirdPoint(midPnt, midPnt2, Constants.HALF_PI, len / 4, clockWise);
-        let points = [midPnt, midPnt1, midPnt2, pnt3];
-        let arrowPnts = DoubleArrow._getArrowHeadPoints(points);
+        const points = [midPnt, midPnt1, midPnt2, pnt3];
+        const arrowPnts = DoubleArrow._getArrowHeadPoints(points);
         if (arrowPnts && Array.isArray(arrowPnts) && arrowPnts.length > 0) {
-            let [neckLeftPoint, neckRightPoint] = [arrowPnts[0], arrowPnts[4]];
-            let tailWidthFactor = MathDistance(pnt1, pnt2) / getBaseLength(points) / 2;
-            let bodyPnts = DoubleArrow._getArrowBodyPoints(points, neckLeftPoint, neckRightPoint, tailWidthFactor);
+            const [neckLeftPoint, neckRightPoint] = [arrowPnts[0], arrowPnts[4]];
+            const tailWidthFactor = MathDistance(pnt1, pnt2) / getBaseLength(points) / 2;
+            const bodyPnts = DoubleArrow._getArrowBodyPoints(points, neckLeftPoint, neckRightPoint, tailWidthFactor);
             if (bodyPnts) {
-                let n = bodyPnts.length;
+                const n = bodyPnts.length;
                 let lPoints = bodyPnts.slice(0, n / 2);
                 let rPoints = bodyPnts.slice(n / 2, n);
                 lPoints.push(neckLeftPoint);
@@ -154,18 +154,18 @@ class DoubleArrow extends InterprolationGeometry {
      * @returns {*[]}
      */
     static _getArrowHeadPoints(points) {
-        let len = getBaseLength(points);
-        let headHeight = len * _options.headHeightFactor;
-        let headPnt = points[points.length - 1];
-        let headWidth = headHeight * _options.headWidthFactor;
-        let neckWidth = headHeight * _options.neckWidthFactor;
-        let neckHeight = headHeight * _options.neckHeightFactor;
-        let headEndPnt = getThirdPoint(points[points.length - 2], headPnt, 0, headHeight, true);
-        let neckEndPnt = getThirdPoint(points[points.length - 2], headPnt, 0, neckHeight, true);
-        let headLeft = getThirdPoint(headPnt, headEndPnt, Constants.HALF_PI, headWidth, false);
-        let headRight = getThirdPoint(headPnt, headEndPnt, Constants.HALF_PI, headWidth, true);
-        let neckLeft = getThirdPoint(headPnt, neckEndPnt, Constants.HALF_PI, neckWidth, false);
-        let neckRight = getThirdPoint(headPnt, neckEndPnt, Constants.HALF_PI, neckWidth, true);
+        const len = getBaseLength(points);
+        const headHeight = len * _options.headHeightFactor;
+        const headPnt = points[points.length - 1];
+        const headWidth = headHeight * _options.headWidthFactor;
+        const neckWidth = headHeight * _options.neckWidthFactor;
+        const neckHeight = headHeight * _options.neckHeightFactor;
+        const headEndPnt = getThirdPoint(points[points.length - 2], headPnt, 0, headHeight, true);
+        const neckEndPnt = getThirdPoint(points[points.length - 2], headPnt, 0, neckHeight, true);
+        const headLeft = getThirdPoint(headPnt, headEndPnt, Constants.HALF_PI, headWidth, false);
+        const headRight = getThirdPoint(headPnt, headEndPnt, Constants.HALF_PI, headWidth, true);
+        const neckLeft = getThirdPoint(headPnt, neckEndPnt, Constants.HALF_PI, neckWidth, false);
+        const neckRight = getThirdPoint(headPnt, neckEndPnt, Constants.HALF_PI, neckWidth, true);
         return [neckLeft, headLeft, headPnt, headRight, neckRight];
     }
 
@@ -178,18 +178,20 @@ class DoubleArrow extends InterprolationGeometry {
      * @returns {*|T[]|string}
      */
     static _getArrowBodyPoints(points, neckLeft, neckRight, tailWidthFactor) {
-        let allLen = wholeDistance(points);
-        let len = getBaseLength(points);
-        let tailWidth = len * tailWidthFactor;
-        let neckWidth = MathDistance(neckLeft, neckRight);
-        let widthDif = (tailWidth - neckWidth) / 2;
-        let [tempLen, leftBodyPnts, rightBodyPnts] = [0, [], []];
+        const allLen = wholeDistance(points);
+        const len = getBaseLength(points);
+        const tailWidth = len * tailWidthFactor;
+        const neckWidth = MathDistance(neckLeft, neckRight);
+        const widthDif = (tailWidth - neckWidth) / 2;
+        let tempLen = 0;
+        const leftBodyPnts = [];
+        const rightBodyPnts = [];
         for (let i = 1; i < points.length - 1; i++) {
-            let angle = getAngleOfThreePoints(points[i - 1], points[i], points[i + 1]) / 2;
+            const angle = getAngleOfThreePoints(points[i - 1], points[i], points[i + 1]) / 2;
             tempLen += MathDistance(points[i - 1], points[i]);
-            let w = (tailWidth / 2 - tempLen / allLen * widthDif) / Math.sin(angle);
-            let left = getThirdPoint(points[i - 1], points[i], Math.PI - angle, w, true);
-            let right = getThirdPoint(points[i - 1], points[i], angle, w, false);
+            const w = (tailWidth / 2 - tempLen / allLen * widthDif) / Math.sin(angle);
+            const left = getThirdPoint(points[i - 1], points[i], Math.PI - angle, w, true);
+            const right = getThirdPoint(points[i - 1], points[i], angle, w, false);
             leftBodyPnts.push(left);
             rightBodyPnts.push(right);
         }
@@ -204,9 +206,9 @@ class DoubleArrow extends InterprolationGeometry {
      * @returns {undefined}
      */
     static getSymmetricalPoints(linePnt1, linePnt2, point) {
-        let midPnt = Mid(linePnt1, linePnt2);
-        let len = MathDistance(midPnt, point);
-        let angle = getAngleOfThreePoints(linePnt1, midPnt, point);
+        const midPnt = Mid(linePnt1, linePnt2);
+        const len = MathDistance(midPnt, point);
+        const angle = getAngleOfThreePoints(linePnt1, midPnt, point);
         let [symPnt, distance1, distance2, mid] = [undefined, undefined, undefined, undefined];
         if (angle < Constants.HALF_PI) {
             distance1 = len * Math.sin(angle);
@@ -263,13 +265,13 @@ DrawTool.registerMode('DoubleArrow', {
                     doublearrow.setSymbol(symbol);
                 }
                 geometry.updateSymbol({
-                    lineOpacity : 0
+                    lineOpacity: 0
                 });
             }
             if (doublearrow) {
                 doublearrow.setCoordinates(path);
                 geometry.updateSymbol({
-                    lineOpacity : 0
+                    lineOpacity: 0
                 });
             }
         }

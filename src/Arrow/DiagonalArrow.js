@@ -6,8 +6,8 @@ import StraightArrow from './StraightArrow';
  * @property {Object} options
  */
 const options = {
-    'widthRatio' : 0.20,
-    'arrowStyle' : []
+    'widthRatio': 0.20,
+    'arrowStyle': []
 };
 
 /**
@@ -42,8 +42,8 @@ export default class DiagonalArrow extends StraightArrow {
 
     _toJSON(options) {
         return {
-            'feature' : this.toGeoJSON(options),
-            'subType' : 'DiagonalArrow'
+            'feature': this.toGeoJSON(options),
+            'subType': 'DiagonalArrow'
         };
     }
 
@@ -59,8 +59,8 @@ export default class DiagonalArrow extends StraightArrow {
         const arrowPairs = getArrowBody(points, lineWidth, this.getMap(), 0.15, length);
         const h1 = arrowPairs[0][arrowPairs[0].length - 1],
             h2 = arrowPairs[1][arrowPairs[1].length - 1];
-        const arrowHead = this._getArrowHead(h1, h2, points[points.length - 1], lineWidth * 0.3, 2);
-        var plots = [];
+        const arrowHead = this._getArrowHead(h1, h2, points, lineWidth, 0.3, 0.6, 1.4, 2.2, 0.8, 3.3);
+        let plots = [];
         plots.push.apply(plots, arrowPairs[0]);
         plots.push.apply(plots, arrowHead);
         for (let i = arrowPairs[1].length - 1; i >= 0; i--) {
@@ -70,7 +70,6 @@ export default class DiagonalArrow extends StraightArrow {
         plots = plots.map(p => p.multi(zoomScale));
         return [plots, [arrowPairs[0].length, arrowHead.length, arrowPairs[1].length]];
     }
-
 }
 
 DiagonalArrow.mergeOptions(options);
@@ -79,13 +78,13 @@ DiagonalArrow.registerJSONType('DiagonalArrow');
 
 maptalks.DrawTool.registerMode('DiagonalArrow', {
     'action': ['click', 'mousemove', 'dblclick'],
-    'create' : function (path) {
+    'create': function (path) {
         return new DiagonalArrow(path);
     },
-    'update' : function (path, geometry) {
+    'update': function (path, geometry) {
         geometry.setCoordinates(path);
     },
-    'generate' : function (geometry) {
+    'generate': function (geometry) {
         return geometry;
     }
 });

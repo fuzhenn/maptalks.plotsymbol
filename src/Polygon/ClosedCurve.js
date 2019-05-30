@@ -39,17 +39,17 @@ class ClosedCurve extends InterprolationGeometry {
             points.push(points[0], points[1]);
             let [normals, pList] = [[], []];
             for (let i = 0; i < points.length - 2; i++) {
-                let normalPoints = getBisectorNormals(this._offset, points[i], points[i + 1], points[i + 2]);
+                const normalPoints = getBisectorNormals(this._offset, points[i], points[i + 1], points[i + 2]);
                 normals = normals.concat(normalPoints);
             }
-            let count = normals.length;
+            const count = normals.length;
             normals = [normals[count - 1]].concat(normals.slice(0, count - 1));
             for (let i = 0; i < points.length - 2; i++) {
-                let pnt1 = points[i];
-                let pnt2 = points[i + 1];
+                const pnt1 = points[i];
+                const pnt2 = points[i + 1];
                 pList.push(pnt1);
                 for (let t = 0; t <= Constants.FITTING_COUNT; t++) {
-                    let pnt = getCubicValue(t / Constants.FITTING_COUNT, pnt1, normals[i * 2], normals[i * 2 + 1], pnt2);
+                    const pnt = getCubicValue(t / Constants.FITTING_COUNT, pnt1, normals[i * 2], normals[i * 2 + 1], pnt2);
                     pList.push(pnt);
                 }
                 pList.push(pnt2);
@@ -115,13 +115,13 @@ DrawTool.registerMode('ClosedCurve', {
                     doublearrow.setSymbol(symbol);
                 }
                 geometry.updateSymbol({
-                    lineOpacity : 0
+                    lineOpacity: 0
                 });
             }
             if (doublearrow) {
                 doublearrow.setCoordinates(path);
                 geometry.updateSymbol({
-                    lineOpacity : 0
+                    lineOpacity: 0
                 });
             }
         }

@@ -6,9 +6,9 @@
 /*!
  * requires maptalks@>=0.44.0 
  */
-import { Canvas, Coordinate, Curve, DrawTool, LineString, Util } from 'maptalks';
+import { Canvas, Coordinate, Curve, DrawTool, LineString, Point, Util } from 'maptalks';
 
-var pointGeometry = Point;
+var pointGeometry = Point$1;
 
 /**
  * A standalone point geometry with useful accessor, comparison, and
@@ -22,12 +22,12 @@ var pointGeometry = Point;
  * @example
  * var point = new Point(-77, 38);
  */
-function Point(x, y) {
+function Point$1(x, y) {
     this.x = x;
     this.y = y;
 }
 
-Point.prototype = {
+Point$1.prototype = {
 
     /**
      * Clone this point, returning a new point that can be modified
@@ -35,7 +35,7 @@ Point.prototype = {
      * @return {Point} the clone
      */
     clone: function clone() {
-        return new Point(this.x, this.y);
+        return new Point$1(this.x, this.y);
     },
 
     /**
@@ -332,12 +332,12 @@ Point.prototype = {
  * // is equivalent to
  * var point = new Point(0, 1);
  */
-Point.convert = function (a) {
-    if (a instanceof Point) {
+Point$1.convert = function (a) {
+    if (a instanceof Point$1) {
         return a;
     }
     if (Array.isArray(a)) {
-        return new Point(a[0], a[1]);
+        return new Point$1(a[0], a[1]);
     }
     return a;
 };
@@ -409,6 +409,7 @@ var possibleConstructorReturn = function (self, call) {
 };
 
 var Coordinate$1 = Coordinate;
+var Canvas$1 = Canvas;
 
 /**
  *                  nextNormal
@@ -454,8 +455,8 @@ var getArrowBody = function getArrowBody(vertexes, lineWidth, map, ratio, arrowL
     var currentLen = 0;
     var upPlots = [],
         downPlots = [];
-    var pair;
-    // var dx, dy;
+    var pair = void 0;
+    // let dx, dy;
     var current = void 0,
         prev = void 0,
         next = void 0;
@@ -534,9 +535,9 @@ var getSectorPoints = function getSectorPoints(measurer, center, radius, startAn
     var numberOfPoints = arguments.length > 5 && arguments[5] !== undefined ? arguments[5] : 100;
     var dx = null,
         dy = null,
-        points = [],
         angleDiff = endAngle - startAngle;
 
+    var points = [];
     angleDiff = angleDiff < 0 ? angleDiff + Math.PI * 2 : angleDiff;
     for (var i = 0; i < numberOfPoints; i++) {
         var rad = angleDiff * i / numberOfPoints + startAngle;
@@ -891,12 +892,191 @@ var getBezierPoints = function getBezierPoints(points) {
      * @returns {boolean}
      */
 
+
+
+
+//和maptalks.Canvas.paintSmoothLine类似，只不过去掉了begainPath的逻辑
+var paintSmoothLine = function paintSmoothLine(ctx, points, lineOpacity, smoothValue, draw, close, tailIdx, tailRatio) {
+    //推算 cubic 贝塞尔曲线片段的起终点和控制点坐标
+    //t0: 片段起始比例 0-1
+    //t1: 片段结束比例 0-1
+    //x1, y1, 曲线起点
+    //bx1, by1, bx2, by2，曲线控制点
+    //x2, y2  曲线终点
+    //结果是曲线片段的起点，2个控制点坐标和终点坐标
+    //https://stackoverflow.com/questions/878862/drawing-part-of-a-b%C3%A9zier-curve-by-reusing-a-basic-b%C3%A9zier-curve-function/879213#879213
+    function interpolate(t0, t1, x1, y1, bx1, by1, bx2, by2, x2, y2) {
+        var u0 = 1.0 - t0;
+        var u1 = 1.0 - t1;
+
+        var qxa = x1 * u0 * u0 + bx1 * 2 * t0 * u0 + bx2 * t0 * t0;
+        var qxb = x1 * u1 * u1 + bx1 * 2 * t1 * u1 + bx2 * t1 * t1;
+        var qxc = bx1 * u0 * u0 + bx2 * 2 * t0 * u0 + x2 * t0 * t0;
+        var qxd = bx1 * u1 * u1 + bx2 * 2 * t1 * u1 + x2 * t1 * t1;
+
+        var qya = y1 * u0 * u0 + by1 * 2 * t0 * u0 + by2 * t0 * t0;
+        var qyb = y1 * u1 * u1 + by1 * 2 * t1 * u1 + by2 * t1 * t1;
+        var qyc = by1 * u0 * u0 + by2 * 2 * t0 * u0 + y2 * t0 * t0;
+        var qyd = by1 * u1 * u1 + by2 * 2 * t1 * u1 + y2 * t1 * t1;
+
+        // const xa = qxa * u0 + qxc * t0;
+        var xb = qxa * u1 + qxc * t1;
+        var xc = qxb * u0 + qxd * t0;
+        var xd = qxb * u1 + qxd * t1;
+
+        // const ya = qya * u0 + qyc * t0;
+        var yb = qya * u1 + qyc * t1;
+        var yc = qyb * u0 + qyd * t0;
+        var yd = qyb * u1 + qyd * t1;
+
+        return [xb, yb, xc, yc, xd, yd];
+    }
+
+    //from http://www.antigrain.com/research/bezier_interpolation/
+    function getCubicControlPoints(x0, y0, x1, y1, x2, y2, x3, y3, smoothValue, t) {
+        // Assume we need to calculate the control
+        // points between (x1,y1) and (x2,y2).
+        // Then x0,y0 - the previous vertex,
+        //      x3,y3 - the next one.
+        var xc1 = (x0 + x1) / 2.0,
+            yc1 = (y0 + y1) / 2.0;
+        var xc2 = (x1 + x2) / 2.0,
+            yc2 = (y1 + y2) / 2.0;
+        var xc3 = (x2 + x3) / 2.0,
+            yc3 = (y2 + y3) / 2.0;
+
+        var len1 = Math.sqrt((x1 - x0) * (x1 - x0) + (y1 - y0) * (y1 - y0));
+        var len2 = Math.sqrt((x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1));
+        var len3 = Math.sqrt((x3 - x2) * (x3 - x2) + (y3 - y2) * (y3 - y2));
+
+        var k1 = len1 / (len1 + len2);
+        var k2 = len2 / (len2 + len3);
+
+        var xm1 = xc1 + (xc2 - xc1) * k1,
+            ym1 = yc1 + (yc2 - yc1) * k1;
+
+        var xm2 = xc2 + (xc3 - xc2) * k2,
+            ym2 = yc2 + (yc3 - yc2) * k2;
+
+        // Resulting control points. Here smoothValue is mentioned
+        // above coefficient K whose value should be in range [0...1].
+        var ctrl1X = xm1 + (xc2 - xm1) * smoothValue + x1 - xm1,
+            ctrl1Y = ym1 + (yc2 - ym1) * smoothValue + y1 - ym1,
+            ctrl2X = xm2 + (xc2 - xm2) * smoothValue + x2 - xm2,
+            ctrl2Y = ym2 + (yc2 - ym2) * smoothValue + y2 - ym2;
+
+        var ctrlPoints = [ctrl1X, ctrl1Y, ctrl2X, ctrl2Y];
+        if (t < 1) {
+            return interpolate(0, t, x1, y1, ctrl1X, ctrl1Y, ctrl2X, ctrl2Y, x2, y2);
+        } else {
+            return ctrlPoints;
+        }
+    }
+
+    function path(ctx, points, lineOpacity, fillOpacity, lineDashArray) {
+        if (!Util.isArrayHasData(points)) {
+            return;
+        }
+        Canvas$1._path(ctx, points, lineDashArray, lineOpacity);
+        Canvas$1._stroke(ctx, lineOpacity);
+    }
+
+    if (!points) {
+        return null;
+    }
+    if (points.length <= 2 || !smoothValue) {
+        if (draw) {
+            path(ctx, points, lineOpacity);
+        }
+        return null;
+    }
+
+    var count = points.length;
+    var l = close ? count : count - 1;
+
+    if (tailRatio !== undefined) l -= Math.max(l - tailIdx - 1, 0);
+    var preCtrlPoints = void 0;
+    for (var i = 0; i < l; i++) {
+        var x1 = points[i].x,
+            y1 = points[i].y;
+
+        var x0 = void 0,
+            y0 = void 0,
+            x2 = void 0,
+            y2 = void 0,
+            x3 = void 0,
+            y3 = void 0;
+        if (i - 1 < 0) {
+            if (!close) {
+                x0 = points[i + 1].x;
+                y0 = points[i + 1].y;
+            } else {
+                x0 = points[l - 1].x;
+                y0 = points[l - 1].y;
+            }
+        } else {
+            x0 = points[i - 1].x;
+            y0 = points[i - 1].y;
+        }
+        if (i + 1 < count) {
+            x2 = points[i + 1].x;
+            y2 = points[i + 1].y;
+        } else {
+            x2 = points[i + 1 - count].x;
+            y2 = points[i + 1 - count].y;
+        }
+        if (i + 2 < count) {
+            x3 = points[i + 2].x;
+            y3 = points[i + 2].y;
+        } else if (!close) {
+            x3 = points[i].x;
+            y3 = points[i].y;
+        } else {
+            x3 = points[i + 2 - count].x;
+            y3 = points[i + 2 - count].y;
+        }
+
+        var ctrlPoints = getCubicControlPoints(x0, y0, x1, y1, x2, y2, x3, y3, smoothValue, i === l - 1 ? tailRatio : 1);
+        if (i === l - 1 && tailRatio >= 0 && tailRatio < 1) {
+            if (ctx) {
+                ctx.bezierCurveTo(ctrlPoints[0], ctrlPoints[1], ctrlPoints[2], ctrlPoints[3], ctrlPoints[4], ctrlPoints[5]);
+            }
+            points.splice(l - 1, count - (l - 1) - 1);
+            var lastPoint = new pointGeometry(ctrlPoints[4], ctrlPoints[5]);
+            lastPoint.prevCtrlPoint = new pointGeometry(ctrlPoints[2], ctrlPoints[3]);
+            points.push(lastPoint);
+            count = points.length;
+        } else if (ctx) {
+            ctx.bezierCurveTo(ctrlPoints[0], ctrlPoints[1], ctrlPoints[2], ctrlPoints[3], x2, y2);
+        }
+        points[i].nextCtrlPoint = ctrlPoints.slice(0, 2);
+        points[i].prevCtrlPoint = preCtrlPoints ? preCtrlPoints.slice(2) : null;
+        preCtrlPoints = ctrlPoints;
+    }
+    if (!close && points[1].prevCtrlPoint) {
+        points[0].nextCtrlPoint = points[1].prevCtrlPoint;
+        delete points[0].prevCtrlPoint;
+    }
+    if (!points[count - 1].prevCtrlPoint) {
+        points[count - 1].prevCtrlPoint = points[count - 2].nextCtrlPoint;
+    }
+    if (draw) {
+        Canvas$1._stroke(ctx, lineOpacity);
+    }
+    return points;
+};
+
 /**
  * @property {Object} options
  */
 var options = {
     'widthRatio': 0.10,
-    'arrowStyle': []
+    'arrowStyle': [],
+    'tailWidthFactor': 0.1,
+    'headWidthFactor': 1,
+    'neckWidthFactor': 0.2,
+    'headAngle': Math.PI / 8.5,
+    'neckAngle': Math.PI / 13
 };
 
 /**
@@ -915,7 +1095,7 @@ var options = {
  *     ],
  *     {
  *         symbol : {
- *             'lineWidth' : 5
+ *             'lineWidth': 5
  *         }
  *     }
  * ).addTo(layer);
@@ -965,7 +1145,7 @@ var StraightArrow = function (_maptalks$Curve) {
         var arrowPairs = getArrowBody(points, lineWidth, this.getMap());
         var h1 = arrowPairs[0][arrowPairs[0].length - 1],
             h2 = arrowPairs[1][arrowPairs[1].length - 1];
-        var arrowHead = this._getArrowHead(h1, h2, points[points.length - 1], lineWidth);
+        var arrowHead = this._getArrowHead(h1, h2, points, lineWidth, 1, 0.8, 1.4, 2.2, 0.7, 2.3);
         var plots = [];
         plots.push.apply(plots, arrowPairs[0]);
         plots.push.apply(plots, arrowHead);
@@ -981,20 +1161,21 @@ var StraightArrow = function (_maptalks$Curve) {
 
     StraightArrow.prototype._paintOn = function _paintOn(ctx, points, segs, lineOpacity, fillOpacity, lineDasharray) {
         ctx.beginPath();
-        var seg;
+        var seg = void 0;
         //draw body upside
         var i = 0;
         ctx.moveTo(points[0].x, points[0].y);
         seg = points.slice(0, segs[0]);
-        this._quadraticCurve(ctx, seg);
+        // this._quadraticCurve(ctx, seg);
+        paintSmoothLine(ctx, seg, lineOpacity, 0.7, true);
         //draw head
         i += segs[0];
         Canvas._path(ctx, points.slice(i, i + segs[1]), lineDasharray, lineOpacity);
         //draw body downside
         i += segs[1];
-        ctx.lineTo(points[i].x, points[i].y);
         seg = points.slice(i, i + segs[2]);
-        this._quadraticCurve(ctx, seg);
+        //this._quadraticCurve(ctx, seg);
+        paintSmoothLine(ctx, seg, lineOpacity, 0.7, true);
         this._closeArrow(ctx, points[points.length - 1], points[0]);
         Canvas._stroke(ctx, lineOpacity);
         Canvas.fillCanvas(ctx, fillOpacity, points[0].x, points[0].y);
@@ -1006,23 +1187,49 @@ var StraightArrow = function (_maptalks$Curve) {
 
     /**
      * Get points of arrow head
-     * @param  {maptalks.Coordinate} h1   - head point 1
-     * @param  {maptalks.Coordinate} h2   - head point 2
-     * @param  {maptalks.Coordinate} vertex - head vertex
-     * @param  {Number} lineWidth         - line width
-     * @return {maptalks.Coordinate[]}
+     * @param  {maptalks.Point} h1   - head point 1
+     * @param  {maptalks.Point} h2   - head point 2
+     * @param  {maptalks.Point} points   - all points
+     * @param  {Number} lineWidth    - line width
+     * @return {maptalks.Point[]}
      */
 
 
-    StraightArrow.prototype._getArrowHead = function _getArrowHead(h1, h2, vertex, lineWidth, hScale) {
+    StraightArrow.prototype._getArrowHead = function _getArrowHead(h1, h2, points, lineWidth, lineRatio, f1, f2, hScale1, hScale2, h1h2Ration) {
+        var arrowHead = this._getArrowHeadPoint(h1, h2, points[points.length - 1], lineWidth * lineRatio, f1, hScale1);
+        var vertex01 = new Point((arrowHead[0].x + arrowHead[1].x) / 2, (arrowHead[0].y + arrowHead[1].y) / 2);
+        var head0 = this._getArrowHeadPoint(arrowHead[0], arrowHead[1], vertex01, lineWidth * lineRatio, f2, hScale2)[0];
+        var vertex21 = new Point((arrowHead[2].x + arrowHead[1].x) / 2, (arrowHead[2].y + arrowHead[1].y) / 2);
+        var head2 = this._getArrowHeadPoint(arrowHead[2], arrowHead[1], vertex21, lineWidth * lineRatio, f2, hScale2)[0];
+        if (points.length === 2) {
+            arrowHead = [h1, head0, arrowHead[1], head2, h2];
+        } else {
+            var besierPoints = paintSmoothLine(null, points, null, 0.8, false);
+            var controlPoint = new Point(besierPoints[besierPoints.length - 1].prevCtrlPoint);
+            //计算控制点与最后一个点构成的延长线上的某一点
+            var lastPoint = points[points.length - 1];
+            var sub = lastPoint.sub(controlPoint);
+            if (!sub.x && !sub.y) {
+                return null;
+            }
+            //const subLength = Math.sqrt(sub.x * sub.x + sub.y * sub.y);
+            var h1h2Length = h1.distanceTo(h2);
+            var direction = sub.unit();
+            var headPoint = new Point(lastPoint.x + direction.x * h1h2Length * h1h2Ration, lastPoint.y + direction.y * h1h2Length * h1h2Ration);
+            arrowHead = [h1, head0, headPoint, head2, h2];
+        }
+        return arrowHead;
+    };
+
+    StraightArrow.prototype._getArrowHeadPoint = function _getArrowHeadPoint(h1, h2, vertex, lineWidth, f, hScale) {
         if (!hScale) {
             hScale = 1;
         }
         h1 = new pointGeometry(h1.x, h1.y);
         h2 = new pointGeometry(h2.x, h2.y);
         var normal = h1.sub(h2)._unit();
-        var head0 = vertex.add(lineWidth * normal.x, lineWidth * normal.y);
-        var head2 = vertex.add(lineWidth * -normal.x, lineWidth * -normal.y);
+        var head0 = vertex.add(lineWidth * normal.x * f, lineWidth * normal.y * f);
+        var head2 = vertex.add(lineWidth * -normal.x * f, lineWidth * -normal.y * f);
         normal._perp()._mult(-1);
         var head1 = vertex.add(hScale * lineWidth * normal.x, hScale * lineWidth * normal.y);
         return [head0, head1, head2];
@@ -1112,7 +1319,7 @@ var DiagonalArrow = function (_StraightArrow) {
         var arrowPairs = getArrowBody(points, lineWidth, this.getMap(), 0.15, length);
         var h1 = arrowPairs[0][arrowPairs[0].length - 1],
             h2 = arrowPairs[1][arrowPairs[1].length - 1];
-        var arrowHead = this._getArrowHead(h1, h2, points[points.length - 1], lineWidth * 0.3, 2);
+        var arrowHead = this._getArrowHead(h1, h2, points, lineWidth, 0.3, 0.6, 1.4, 2.2, 0.8, 3.3);
         var plots = [];
         plots.push.apply(plots, arrowPairs[0]);
         plots.push.apply(plots, arrowHead);
@@ -1485,10 +1692,9 @@ var DoubleArrow = function (_InterprolationGeomet) {
         var tailWidth = len * tailWidthFactor;
         var neckWidth = MathDistance(neckLeft, neckRight);
         var widthDif = (tailWidth - neckWidth) / 2;
-        var tempLen = 0,
-            leftBodyPnts = [],
-            rightBodyPnts = [];
-
+        var tempLen = 0;
+        var leftBodyPnts = [];
+        var rightBodyPnts = [];
         for (var i = 1; i < points.length - 1; i++) {
             var angle = getAngleOfThreePoints(points[i - 1], points[i], points[i + 1]) / 2;
             tempLen += MathDistance(points[i - 1], points[i]);

@@ -32,12 +32,12 @@ class Sector extends InterprolationGeometry {
             this.setCoordinates(_points);
             return null;
         } else if (count === 3) {
-            let [center, pnt2, pnt3] = [_points[0], _points[1], _points[2]];
+            const [center, pnt2, pnt3] = [_points[0], _points[1], _points[2]];
             const measurer = this._getMeasurer();
             const radius = pointDistance(measurer, pnt2, center);
-            let startAngle = getAzimuth(pnt2, center);
-            let endAngle = getAzimuth(pnt3, center);
-            let pList = getSectorPoints(measurer, center, radius, startAngle, endAngle);
+            const startAngle = getAzimuth(pnt2, center);
+            const endAngle = getAzimuth(pnt3, center);
+            const pList = getSectorPoints(measurer, center, radius, startAngle, endAngle);
             pList.push(center, pList[0]);
             points = pList.map(p => {
                 return new Coordinate(p);
@@ -107,13 +107,13 @@ DrawTool.registerMode('Sector', {
                     sector.setSymbol(pSymbol);
                 }
                 geometry.updateSymbol({
-                    lineOpacity : 0
+                    lineOpacity: 0
                 });
             }
             if (sector) {
                 sector.setCoordinates(path);
                 geometry.updateSymbol({
-                    lineOpacity : 0
+                    lineOpacity: 0
                 });
             }
         }
