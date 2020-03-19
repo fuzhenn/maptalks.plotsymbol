@@ -1,7 +1,7 @@
 /*!
  * maptalks.plotsymbol v0.4.2
  * LICENSE : MIT
- * (c) 2016-2019 maptalks.org
+ * (c) 2016-2020 maptalks.org
  */
 /*!
  * requires maptalks@>=0.44.1 
@@ -1248,11 +1248,20 @@ StraightArrow.registerJSONType('StraightArrow');
 
 DrawTool.registerMode('StraightArrow', {
     action: ['click', 'mousemove', 'dblclick'],
-    create: function create(path) {
-        return new StraightArrow(path);
+    create: function create(projection, prjPath) {
+        var path = prjPath.map(function (c) {
+            return projection.unproject(c);
+        });
+        var geometry = new StraightArrow(path);
+        geometry._setPrjCoordinates(prjPath);
+        return geometry;
     },
-    update: function update(path, geometry) {
+    update: function update(projection, prjPath, geometry) {
+        var path = prjPath.map(function (c) {
+            return projection.unproject(c);
+        });
         geometry.setCoordinates(path);
+        geometry._setPrjCoordinates(prjPath);
     },
     generate: function generate(geometry) {
         return geometry;
@@ -1346,11 +1355,20 @@ DiagonalArrow.registerJSONType('DiagonalArrow');
 
 DrawTool.registerMode('DiagonalArrow', {
     'action': ['click', 'mousemove', 'dblclick'],
-    'create': function create(path) {
-        return new DiagonalArrow(path);
+    'create': function create(projection, prjPath) {
+        var path = prjPath.map(function (c) {
+            return projection.unproject(c);
+        });
+        var geometry = new DiagonalArrow(path);
+        geometry._setPrjCoordinates(prjPath);
+        return geometry;
     },
-    'update': function update(path, geometry) {
+    'update': function update(projection, prjPath, geometry) {
+        var path = prjPath.map(function (c) {
+            return projection.unproject(c);
+        });
         geometry.setCoordinates(path);
+        geometry._setPrjCoordinates(prjPath);
     },
     'generate': function generate(geometry) {
         return geometry;
@@ -1435,11 +1453,20 @@ DoveTailDiagonalArrow.registerJSONType('DoveTailDiagonalArrow');
 
 DrawTool.registerMode('DoveTailDiagonalArrow', {
     'action': ['click', 'mousemove', 'dblclick'],
-    'create': function create(path) {
-        return new DoveTailDiagonalArrow(path);
+    'create': function create(projection, prjPath) {
+        var path = prjPath.map(function (c) {
+            return projection.unproject(c);
+        });
+        var geometry = new DoveTailDiagonalArrow(path);
+        geometry._setPrjCoordinates(prjPath);
+        return geometry;
     },
-    'update': function update(path, geometry) {
+    'update': function update(projection, prjPath, geometry) {
+        var path = prjPath.map(function (c) {
+            return projection.unproject(c);
+        });
         geometry.setCoordinates(path);
+        geometry._setPrjCoordinates(prjPath);
     },
     'generate': function generate(geometry) {
         return geometry;
@@ -1767,12 +1794,21 @@ DoubleArrow.registerJSONType('DoubleArrow');
 
 DrawTool.registerMode('DoubleArrow', {
     action: ['click', 'mousemove', 'dblclick'],
-    create: function create(path) {
-        return new LineString(path);
+    create: function create(projection, prjPath) {
+        var path = prjPath.map(function (c) {
+            return projection.unproject(c);
+        });
+        var geometry = new LineString(path);
+        geometry._setPrjCoordinates(prjPath);
+        return geometry;
     },
-    update: function update(path, geometry, e) {
+    update: function update(projection, prjPath, geometry, e) {
+        var path = prjPath.map(function (c) {
+            return projection.unproject(c);
+        });
         var symbol = geometry.getSymbol();
         geometry.setCoordinates(path);
+        geometry._setPrjCoordinates(prjPath);
         var layer = geometry.getLayer();
         if (layer) {
             var map = layer.getMap();
@@ -1919,12 +1955,21 @@ ClosedCurve.registerJSONType('ClosedCurve');
 
 DrawTool.registerMode('ClosedCurve', {
     action: ['click', 'mousemove', 'dblclick'],
-    create: function create(path) {
-        return new LineString(path);
+    create: function create(projection, prjPath) {
+        var path = prjPath.map(function (c) {
+            return projection.unproject(c);
+        });
+        var geometry = new LineString(path);
+        geometry._setPrjCoordinates(prjPath);
+        return geometry;
     },
-    update: function update(path, geometry) {
+    update: function update(projection, prjPath, geometry) {
+        var path = prjPath.map(function (c) {
+            return projection.unproject(c);
+        });
         var symbol = geometry.getSymbol();
         geometry.setCoordinates(path);
+        geometry._setPrjCoordinates(prjPath);
 
         var layer = geometry.getLayer();
         if (layer) {
@@ -2056,14 +2101,23 @@ Sector.registerJSONType('Sector');
 
 DrawTool.registerMode('Sector', {
     action: ['click', 'mousemove', 'dblclick'],
-    create: function create(path) {
+    create: function create(projection, prjPath) {
         // return new Sector(path);
-        return new LineString(path);
+        var path = prjPath.map(function (c) {
+            return projection.unproject(c);
+        });
+        var geometry = new LineString(path);
+        geometry._setPrjCoordinates(prjPath);
+        return geometry;
     },
-    update: function update(path, geometry, e) {
+    update: function update(projection, prjPath, geometry, e) {
+        var path = prjPath.map(function (c) {
+            return projection.unproject(c);
+        });
         // geometry.setCoordinates(path);
         var symbol = geometry.getSymbol();
         geometry.setCoordinates(path);
+        geometry._setPrjCoordinates(prjPath);
 
         var layer = geometry.getLayer();
         if (layer) {

@@ -71,11 +71,16 @@ DoveTailDiagonalArrow.registerJSONType('DoveTailDiagonalArrow');
 
 maptalks.DrawTool.registerMode('DoveTailDiagonalArrow', {
     'action': ['click', 'mousemove', 'dblclick'],
-    'create': function (path) {
-        return new DoveTailDiagonalArrow(path);
+    'create': function (projection, prjPath) {
+        const path = prjPath.map(c => projection.unproject(c));
+        const geometry = new DoveTailDiagonalArrow(path);
+        geometry._setPrjCoordinates(prjPath)
+        return geometry;
     },
-    'update': function (path, geometry) {
+    'update': function (projection, prjPath, geometry) {
+        const path = prjPath.map(c => projection.unproject(c));
         geometry.setCoordinates(path);
+        geometry._setPrjCoordinates(prjPath);
     },
     'generate': function (geometry) {
         return geometry;

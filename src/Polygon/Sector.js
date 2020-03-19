@@ -83,14 +83,19 @@ Sector.registerJSONType('Sector');
 
 DrawTool.registerMode('Sector', {
     action: ['click', 'mousemove', 'dblclick'],
-    create(path) {
+    create(projection, prjPath) {
         // return new Sector(path);
-        return new LineString(path);
+        const path = prjPath.map(c => projection.unproject(c));
+        const geometry = new LineString(path);
+        geometry._setPrjCoordinates(prjPath)
+        return geometry;
     },
-    update(path, geometry, e) {
+    update(projection, prjPath, geometry, e) {
+        const path = prjPath.map(c => projection.unproject(c));
         // geometry.setCoordinates(path);
         const symbol = geometry.getSymbol();
         geometry.setCoordinates(path);
+        geometry._setPrjCoordinates(prjPath);
 
         const layer = geometry.getLayer();
         if (layer) {

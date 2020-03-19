@@ -78,11 +78,16 @@ DiagonalArrow.registerJSONType('DiagonalArrow');
 
 maptalks.DrawTool.registerMode('DiagonalArrow', {
     'action': ['click', 'mousemove', 'dblclick'],
-    'create': function (path) {
-        return new DiagonalArrow(path);
+    'create': function (projection, prjPath) {
+        const path = prjPath.map(c => projection.unproject(c));
+        const geometry = new DiagonalArrow(path);
+        geometry._setPrjCoordinates(prjPath)
+        return geometry;
     },
-    'update': function (path, geometry) {
+    'update': function (projection, prjPath, geometry) {
+        const path = prjPath.map(c => projection.unproject(c));
         geometry.setCoordinates(path);
+        geometry._setPrjCoordinates(prjPath);
     },
     'generate': function (geometry) {
         return geometry;

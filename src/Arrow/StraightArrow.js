@@ -165,11 +165,16 @@ StraightArrow.registerJSONType('StraightArrow');
 
 maptalks.DrawTool.registerMode('StraightArrow', {
     action: ['click', 'mousemove', 'dblclick'],
-    create(path) {
-        return new StraightArrow(path);
+    create(projection, prjPath) {
+        const path = prjPath.map(c => projection.unproject(c));
+        const geometry = new StraightArrow(path);
+        geometry._setPrjCoordinates(prjPath)
+        return geometry;
     },
-    update(path, geometry) {
+    update(projection, prjPath, geometry) {
+        const path = prjPath.map(c => projection.unproject(c));
         geometry.setCoordinates(path);
+        geometry._setPrjCoordinates(prjPath);
     },
     generate(geometry) {
         return geometry;
