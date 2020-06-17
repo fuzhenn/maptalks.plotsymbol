@@ -81,8 +81,17 @@ maptalks.DrawTool.registerMode('DiagonalArrow', {
     'create': function (path) {
         return new DiagonalArrow(path);
     },
-    'update': function (path, geometry) {
+    'update': function (projection, prjPath, geometry) {
+        let prjCoords;
+        if (Array.isArray(prjPath)) {
+            prjCoords = prjPath;
+        } else {
+            prjCoords = geometry._getPrjCoordinates();
+            prjCoords.push(prjPath);
+        }
+        const path = prjCoords.map(c => projection.unproject(c));
         geometry.setCoordinates(path);
+        geometry._setPrjCoordinates(prjCoords);
     },
     'generate': function (geometry) {
         return geometry;

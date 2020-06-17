@@ -168,8 +168,17 @@ maptalks.DrawTool.registerMode('StraightArrow', {
     create(path) {
         return new StraightArrow(path);
     },
-    update(path, geometry) {
+    update(projection, prjPath, geometry) {
+        let prjCoords;
+        if (Array.isArray(prjPath)) {
+            prjCoords = prjPath;
+        } else {
+            prjCoords = geometry._getPrjCoordinates();
+            prjCoords.push(prjPath);
+        }
+        const path = prjCoords.map(c => projection.unproject(c));
         geometry.setCoordinates(path);
+        geometry._setPrjCoordinates(prjCoords);
     },
     generate(geometry) {
         return geometry;

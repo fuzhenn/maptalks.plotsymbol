@@ -52,7 +52,7 @@ export default class DoveTailDiagonalArrow extends DiagonalArrow {
         const t1 = new Point(last.x, last.y);
         const t2 = new Point(first.x, first.y);
         const m = new Point(t1.x + t2.x, t1.y + t2.y).mult(1 / 2);
-        const dist = t1.dist(t2);
+        const dist = -t1.dist(t2);
         const normal = t1.sub(t2)._unit()._perp();
         const max = 0.618;
         const min = 0.1;
@@ -74,8 +74,17 @@ maptalks.DrawTool.registerMode('DoveTailDiagonalArrow', {
     'create': function (path) {
         return new DoveTailDiagonalArrow(path);
     },
-    'update': function (path, geometry) {
+    'update': function (projection, prjPath, geometry) {
+        let prjCoords;
+        if (Array.isArray(prjPath)) {
+            prjCoords = prjPath;
+        } else {
+            prjCoords = geometry._getPrjCoordinates();
+            prjCoords.push(prjPath);
+        }
+        const path = prjCoords.map(c => projection.unproject(c));
         geometry.setCoordinates(path);
+        geometry._setPrjCoordinates(prjCoords);
     },
     'generate': function (geometry) {
         return geometry;

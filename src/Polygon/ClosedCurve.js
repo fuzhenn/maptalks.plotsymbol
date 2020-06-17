@@ -99,9 +99,18 @@ DrawTool.registerMode('ClosedCurve', {
     create(path) {
         return new LineString(path);
     },
-    update(path, geometry) {
+    update(projection, path, geometry) {
         const symbol = geometry.getSymbol();
-        geometry.setCoordinates(path);
+        let prjCoords;
+        if (Array.isArray(path)) {
+            prjCoords = path;
+        } else {
+            prjCoords = geometry._getPrjCoordinates();
+            prjCoords.push(path);
+        }
+        const coordinates = prjCoords.map(c => projection.unproject(c));
+        geometry.setCoordinates(coordinates);
+        geometry._setPrjCoordinates(prjCoords);
 
         const layer = geometry.getLayer();
         if (layer) {
@@ -119,7 +128,8 @@ DrawTool.registerMode('ClosedCurve', {
                 });
             }
             if (doublearrow) {
-                doublearrow.setCoordinates(path);
+                doublearrow.setCoordinates(coordinates);
+                doublearrow._setPrjCoordinates(path);
                 geometry.updateSymbol({
                     lineOpacity: 0
                 });

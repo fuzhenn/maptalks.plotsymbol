@@ -87,11 +87,18 @@ DrawTool.registerMode('Sector', {
         // return new Sector(path);
         return new LineString(path);
     },
-    update(path, geometry, e) {
-        // geometry.setCoordinates(path);
+    update(projection, path, geometry, e) {
         const symbol = geometry.getSymbol();
-        geometry.setCoordinates(path);
-
+        let prjCoords;
+        if (Array.isArray(path)) {
+            prjCoords = path;
+        } else {
+            prjCoords = geometry._getPrjCoordinates();
+            prjCoords.push(path);
+        }
+        const coordinates = prjCoords.map(c => projection.unproject(c));
+        geometry.setCoordinates(coordinates);
+        geometry._setPrjCoordinates(prjCoords);
         const layer = geometry.getLayer();
         if (layer) {
             const map = layer.getMap();
@@ -112,7 +119,8 @@ DrawTool.registerMode('Sector', {
                 });
             }
             if (sector) {
-                sector.setCoordinates(path);
+                sector.setCoordinates(coordinates);
+                sector._setPrjCoordinates(prjCoords);
                 geometry.updateSymbol({
                     lineOpacity: 0
                 });
