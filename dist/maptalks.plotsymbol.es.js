@@ -1,7 +1,7 @@
 /*!
- * maptalks.plotsymbol v0.4.2
+ * maptalks.plotsymbol v0.5.0
  * LICENSE : MIT
- * (c) 2016-2019 maptalks.org
+ * (c) 2016-2020 maptalks.org
  */
 /*!
  * requires maptalks@>=0.44.1 
@@ -1251,8 +1251,19 @@ DrawTool.registerMode('StraightArrow', {
     create: function create(path) {
         return new StraightArrow(path);
     },
-    update: function update(path, geometry) {
+    update: function update(projection, prjPath, geometry) {
+        var prjCoords = void 0;
+        if (Array.isArray(prjPath)) {
+            prjCoords = prjPath;
+        } else {
+            prjCoords = geometry._getPrjCoordinates();
+            prjCoords.push(prjPath);
+        }
+        var path = prjCoords.map(function (c) {
+            return projection.unproject(c);
+        });
         geometry.setCoordinates(path);
+        geometry._setPrjCoordinates(prjCoords);
     },
     generate: function generate(geometry) {
         return geometry;
@@ -1349,8 +1360,19 @@ DrawTool.registerMode('DiagonalArrow', {
     'create': function create(path) {
         return new DiagonalArrow(path);
     },
-    'update': function update(path, geometry) {
+    'update': function update(projection, prjPath, geometry) {
+        var prjCoords = void 0;
+        if (Array.isArray(prjPath)) {
+            prjCoords = prjPath;
+        } else {
+            prjCoords = geometry._getPrjCoordinates();
+            prjCoords.push(prjPath);
+        }
+        var path = prjCoords.map(function (c) {
+            return projection.unproject(c);
+        });
         geometry.setCoordinates(path);
+        geometry._setPrjCoordinates(prjCoords);
     },
     'generate': function generate(geometry) {
         return geometry;
@@ -1414,7 +1436,7 @@ var DoveTailDiagonalArrow = function (_DiagonalArrow) {
         var t1 = new pointGeometry(last.x, last.y);
         var t2 = new pointGeometry(first.x, first.y);
         var m = new pointGeometry(t1.x + t2.x, t1.y + t2.y).mult(1 / 2);
-        var dist = t1.dist(t2);
+        var dist = -t1.dist(t2);
         var normal = t1.sub(t2)._unit()._perp();
         var max = 0.618;
         var min = 0.1;
@@ -1438,8 +1460,19 @@ DrawTool.registerMode('DoveTailDiagonalArrow', {
     'create': function create(path) {
         return new DoveTailDiagonalArrow(path);
     },
-    'update': function update(path, geometry) {
+    'update': function update(projection, prjPath, geometry) {
+        var prjCoords = void 0;
+        if (Array.isArray(prjPath)) {
+            prjCoords = prjPath;
+        } else {
+            prjCoords = geometry._getPrjCoordinates();
+            prjCoords.push(prjPath);
+        }
+        var path = prjCoords.map(function (c) {
+            return projection.unproject(c);
+        });
         geometry.setCoordinates(path);
+        geometry._setPrjCoordinates(prjCoords);
     },
     'generate': function generate(geometry) {
         return geometry;
@@ -1770,9 +1803,21 @@ DrawTool.registerMode('DoubleArrow', {
     create: function create(path) {
         return new LineString(path);
     },
-    update: function update(path, geometry, e) {
+    update: function update(projection, path, geometry, e) {
         var symbol = geometry.getSymbol();
-        geometry.setCoordinates(path);
+        var prjCoords = void 0;
+        if (Array.isArray(path)) {
+            prjCoords = path;
+        } else {
+            prjCoords = geometry._getPrjCoordinates();
+            prjCoords.push(path);
+        }
+        var coordinates = prjCoords.map(function (c) {
+            return projection.unproject(c);
+        });
+        geometry.setCoordinates(coordinates);
+        geometry._setPrjCoordinates(prjCoords);
+
         var layer = geometry.getLayer();
         if (layer) {
             var map = layer.getMap();
@@ -1791,7 +1836,8 @@ DrawTool.registerMode('DoubleArrow', {
                 });
             }
             if (doublearrow) {
-                doublearrow.setCoordinates(path);
+                doublearrow.setCoordinates(coordinates);
+                doublearrow._setPrjCoordinates(path);
                 geometry.updateSymbol({
                     lineOpacity: 0
                 });
@@ -1922,9 +1968,20 @@ DrawTool.registerMode('ClosedCurve', {
     create: function create(path) {
         return new LineString(path);
     },
-    update: function update(path, geometry) {
+    update: function update(projection, path, geometry) {
         var symbol = geometry.getSymbol();
-        geometry.setCoordinates(path);
+        var prjCoords = void 0;
+        if (Array.isArray(path)) {
+            prjCoords = path;
+        } else {
+            prjCoords = geometry._getPrjCoordinates();
+            prjCoords.push(path);
+        }
+        var coordinates = prjCoords.map(function (c) {
+            return projection.unproject(c);
+        });
+        geometry.setCoordinates(coordinates);
+        geometry._setPrjCoordinates(prjCoords);
 
         var layer = geometry.getLayer();
         if (layer) {
@@ -1942,7 +1999,8 @@ DrawTool.registerMode('ClosedCurve', {
                 });
             }
             if (doublearrow) {
-                doublearrow.setCoordinates(path);
+                doublearrow.setCoordinates(coordinates);
+                doublearrow._setPrjCoordinates(path);
                 geometry.updateSymbol({
                     lineOpacity: 0
                 });
@@ -2060,11 +2118,20 @@ DrawTool.registerMode('Sector', {
         // return new Sector(path);
         return new LineString(path);
     },
-    update: function update(path, geometry, e) {
-        // geometry.setCoordinates(path);
+    update: function update(projection, path, geometry, e) {
         var symbol = geometry.getSymbol();
-        geometry.setCoordinates(path);
-
+        var prjCoords = void 0;
+        if (Array.isArray(path)) {
+            prjCoords = path;
+        } else {
+            prjCoords = geometry._getPrjCoordinates();
+            prjCoords.push(path);
+        }
+        var coordinates = prjCoords.map(function (c) {
+            return projection.unproject(c);
+        });
+        geometry.setCoordinates(coordinates);
+        geometry._setPrjCoordinates(prjCoords);
         var layer = geometry.getLayer();
         if (layer) {
             var map = layer.getMap();
@@ -2084,7 +2151,8 @@ DrawTool.registerMode('Sector', {
                 });
             }
             if (sector) {
-                sector.setCoordinates(path);
+                sector.setCoordinates(coordinates);
+                sector._setPrjCoordinates(prjCoords);
                 geometry.updateSymbol({
                     lineOpacity: 0
                 });
@@ -2106,4 +2174,4 @@ DrawTool.registerMode('Sector', {
 
 export { StraightArrow, DiagonalArrow, DoveTailDiagonalArrow, DoubleArrow, ClosedCurve, Sector };
 
-typeof console !== 'undefined' && console.log('maptalks.plotsymbol v0.4.2, requires maptalks@>=0.44.1.');
+typeof console !== 'undefined' && console.log('maptalks.plotsymbol v0.5.0, requires maptalks@>=0.44.1.');
