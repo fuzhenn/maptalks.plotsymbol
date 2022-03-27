@@ -96,8 +96,11 @@ ClosedCurve.registerJSONType('ClosedCurve');
 
 DrawTool.registerMode('ClosedCurve', {
     action: ['click', 'mousemove', 'dblclick'],
-    create(path) {
-        return new LineString(path);
+    create(projection, prjPath) {
+        const path = prjPath.map(c => projection.unproject(c));
+        const line = new LineString(path);
+        line._setPrjCoordinates(prjPath);
+        return line;
     },
     update(projection, path, geometry) {
         const symbol = geometry.getSymbol();

@@ -43,7 +43,7 @@ class Sector extends InterprolationGeometry {
                 return new Coordinate(p);
             });
         } else if (count > 3) {
-            this._drawTool.endDraw();
+            // this._drawTool.endDraw();
         }
         return points;
     }
@@ -83,9 +83,11 @@ Sector.registerJSONType('Sector');
 
 DrawTool.registerMode('Sector', {
     action: ['click', 'mousemove', 'dblclick'],
-    create(path) {
-        // return new Sector(path);
-        return new LineString(path);
+    create(projection, prjPath) {
+        const path = prjPath.map(c => projection.unproject(c));
+        const line = new LineString(path);
+        line._setPrjCoordinates(prjPath);
+        return line;
     },
     update(projection, path, geometry, e) {
         const symbol = geometry.getSymbol();

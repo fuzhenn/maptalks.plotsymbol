@@ -51,7 +51,7 @@ class DoubleArrow extends InterprolationGeometry {
                 this.symmetricalPoints = _points[3];
                 this.connetPoints = Mid(pnt1, pnt2);
             } else if (count > 4) {
-                this._drawTool.disable();
+                //this._drawTool.disable();
             }
             let [leftArrowPoints, rightArrowPoints] = [undefined, undefined];
             if (isClockWise(pnt1, pnt2, pnt3)) {
@@ -246,8 +246,11 @@ DoubleArrow.registerJSONType('DoubleArrow');
 
 DrawTool.registerMode('DoubleArrow', {
     action: ['click', 'mousemove', 'dblclick'],
-    create(path) {
-        return new LineString(path);
+    create(projection, prjPath) {
+        const path = prjPath.map(c => projection.unproject(c));
+        const line = new LineString(path);
+        line._setPrjCoordinates(prjPath);
+        return line;
     },
     update(projection, path, geometry, e) {
         const symbol = geometry.getSymbol();

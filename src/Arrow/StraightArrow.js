@@ -54,7 +54,13 @@ export default class StraightArrow extends maptalks.Curve {
 
     startEdit(options = {}) {
         options.newVertexHandleSymbol = {
-            opacity: 0
+            'markerType': 'ellipse',
+            'markerFill': '#fff',
+            'markerLineColor': '#000',
+            'markerLineWidth': 2,
+            'markerWidth': 10,
+            'markerHeight': 10,
+            'opacity': 0
         };
         return super.startEdit(options);
     }
@@ -165,8 +171,11 @@ StraightArrow.registerJSONType('StraightArrow');
 
 maptalks.DrawTool.registerMode('StraightArrow', {
     action: ['click', 'mousemove', 'dblclick'],
-    create(path) {
-        return new StraightArrow(path);
+    create(projection, prjPath) {
+        const path = prjPath.map(c => projection.unproject(c));
+        const line = new StraightArrow(path);
+        line._setPrjCoordinates(prjPath);
+        return line;
     },
     update(projection, prjPath, geometry) {
         let prjCoords;

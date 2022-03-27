@@ -78,8 +78,11 @@ DiagonalArrow.registerJSONType('DiagonalArrow');
 
 maptalks.DrawTool.registerMode('DiagonalArrow', {
     'action': ['click', 'mousemove', 'dblclick'],
-    'create': function (path) {
-        return new DiagonalArrow(path);
+    'create': function (projection, prjPath) {
+        const path = prjPath.map(c => projection.unproject(c));
+        const line = new DiagonalArrow(path);
+        line._setPrjCoordinates(prjPath);
+        return line;
     },
     'update': function (projection, prjPath, geometry) {
         let prjCoords;

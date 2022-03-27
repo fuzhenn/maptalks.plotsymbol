@@ -4,7 +4,13 @@ class InterpolationGeometry extends maptalks.Curve {
 
     startEdit(options = {}) {
         options.newVertexHandleSymbol = {
-            opacity: 0
+            'markerType': 'ellipse',
+            'markerFill': '#fff',
+            'markerLineColor': '#000',
+            'markerLineWidth': 2,
+            'markerWidth': 10,
+            'markerHeight': 10,
+            'opacity': 0
         };
         return super.startEdit(options);
     }
