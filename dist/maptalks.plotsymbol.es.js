@@ -1,7 +1,7 @@
 /*!
- * maptalks.plotsymbol v0.5.0
+ * maptalks.plotsymbol v0.6.0
  * LICENSE : MIT
- * (c) 2016-2020 maptalks.org
+ * (c) 2016-2022 maptalks.org
  */
 /*!
  * requires maptalks@>=0.44.1 
@@ -1131,7 +1131,13 @@ var StraightArrow = function (_maptalks$Curve) {
         var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 
         options.newVertexHandleSymbol = {
-            opacity: 0
+            'markerType': 'ellipse',
+            'markerFill': '#fff',
+            'markerLineColor': '#000',
+            'markerLineWidth': 2,
+            'markerWidth': 10,
+            'markerHeight': 10,
+            'opacity': 0
         };
         return _maptalks$Curve.prototype.startEdit.call(this, options);
     };
@@ -1248,8 +1254,13 @@ StraightArrow.registerJSONType('StraightArrow');
 
 DrawTool.registerMode('StraightArrow', {
     action: ['click', 'mousemove', 'dblclick'],
-    create: function create(path) {
-        return new StraightArrow(path);
+    create: function create(projection, prjPath) {
+        var path = prjPath.map(function (c) {
+            return projection.unproject(c);
+        });
+        var line = new StraightArrow(path);
+        line._setPrjCoordinates(prjPath);
+        return line;
     },
     update: function update(projection, prjPath, geometry) {
         var prjCoords = void 0;
@@ -1357,8 +1368,13 @@ DiagonalArrow.registerJSONType('DiagonalArrow');
 
 DrawTool.registerMode('DiagonalArrow', {
     'action': ['click', 'mousemove', 'dblclick'],
-    'create': function create(path) {
-        return new DiagonalArrow(path);
+    'create': function create(projection, prjPath) {
+        var path = prjPath.map(function (c) {
+            return projection.unproject(c);
+        });
+        var line = new DiagonalArrow(path);
+        line._setPrjCoordinates(prjPath);
+        return line;
     },
     'update': function update(projection, prjPath, geometry) {
         var prjCoords = void 0;
@@ -1457,8 +1473,13 @@ DoveTailDiagonalArrow.registerJSONType('DoveTailDiagonalArrow');
 
 DrawTool.registerMode('DoveTailDiagonalArrow', {
     'action': ['click', 'mousemove', 'dblclick'],
-    'create': function create(path) {
-        return new DoveTailDiagonalArrow(path);
+    'create': function create(projection, prjPath) {
+        var path = prjPath.map(function (c) {
+            return projection.unproject(c);
+        });
+        var line = new DoveTailDiagonalArrow(path);
+        line._setPrjCoordinates(prjPath);
+        return line;
     },
     'update': function update(projection, prjPath, geometry) {
         var prjCoords = void 0;
@@ -1491,7 +1512,13 @@ var InterpolationGeometry = function (_maptalks$Curve) {
         var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 
         options.newVertexHandleSymbol = {
-            opacity: 0
+            'markerType': 'ellipse',
+            'markerFill': '#fff',
+            'markerLineColor': '#000',
+            'markerLineWidth': 2,
+            'markerWidth': 10,
+            'markerHeight': 10,
+            'opacity': 0
         };
         return _maptalks$Curve.prototype.startEdit.call(this, options);
     };
@@ -1584,7 +1611,7 @@ var DoubleArrow = function (_InterprolationGeomet) {
                 this.symmetricalPoints = _points[3];
                 this.connetPoints = Mid(pnt1, pnt2);
             } else if (count > 4) {
-                this._drawTool.disable();
+                //this._drawTool.disable();
             }
             var leftArrowPoints = undefined,
                 rightArrowPoints = undefined;
@@ -1800,8 +1827,13 @@ DoubleArrow.registerJSONType('DoubleArrow');
 
 DrawTool.registerMode('DoubleArrow', {
     action: ['click', 'mousemove', 'dblclick'],
-    create: function create(path) {
-        return new LineString(path);
+    create: function create(projection, prjPath) {
+        var path = prjPath.map(function (c) {
+            return projection.unproject(c);
+        });
+        var line = new LineString(path);
+        line._setPrjCoordinates(prjPath);
+        return line;
     },
     update: function update(projection, path, geometry, e) {
         var symbol = geometry.getSymbol();
@@ -1965,8 +1997,13 @@ ClosedCurve.registerJSONType('ClosedCurve');
 
 DrawTool.registerMode('ClosedCurve', {
     action: ['click', 'mousemove', 'dblclick'],
-    create: function create(path) {
-        return new LineString(path);
+    create: function create(projection, prjPath) {
+        var path = prjPath.map(function (c) {
+            return projection.unproject(c);
+        });
+        var line = new LineString(path);
+        line._setPrjCoordinates(prjPath);
+        return line;
     },
     update: function update(projection, path, geometry) {
         var symbol = geometry.getSymbol();
@@ -2072,7 +2109,7 @@ var Sector = function (_InterprolationGeomet) {
                 return new Coordinate(p);
             });
         } else if (count > 3) {
-            this._drawTool.endDraw();
+            // this._drawTool.endDraw();
         }
         return points;
     };
@@ -2114,9 +2151,13 @@ Sector.registerJSONType('Sector');
 
 DrawTool.registerMode('Sector', {
     action: ['click', 'mousemove', 'dblclick'],
-    create: function create(path) {
-        // return new Sector(path);
-        return new LineString(path);
+    create: function create(projection, prjPath) {
+        var path = prjPath.map(function (c) {
+            return projection.unproject(c);
+        });
+        var line = new LineString(path);
+        line._setPrjCoordinates(prjPath);
+        return line;
     },
     update: function update(projection, path, geometry, e) {
         var symbol = geometry.getSymbol();
@@ -2174,4 +2215,4 @@ DrawTool.registerMode('Sector', {
 
 export { StraightArrow, DiagonalArrow, DoveTailDiagonalArrow, DoubleArrow, ClosedCurve, Sector };
 
-typeof console !== 'undefined' && console.log('maptalks.plotsymbol v0.5.0, requires maptalks@>=0.44.1.');
+typeof console !== 'undefined' && console.log('maptalks.plotsymbol v0.6.0, requires maptalks@>=0.44.1.');
