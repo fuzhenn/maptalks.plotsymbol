@@ -47,8 +47,9 @@
             mode: 'Point',
             symbol: {
                 'lineColor': '#e84',
+                //lineDasharray: [10, 10],
                 'polygonFill': '#f00',
-                'polygonOpacity': 0.01,
+                'polygonOpacity': 1,
             }
         }).addTo(map).disable();
 
@@ -76,6 +77,7 @@
             var geometry = param.geometry;
             layer.addGeometry(geometry);
             geometry.updateSymbol({
+                'lineColor': ' #FF0000',
                 'polygonFill': '#ff0'
             });
             geometry.on('dblclick', e => {
@@ -85,11 +87,7 @@
             geometry.setMenu(menuoptions);
         });
 
-        var items = ['DoubleArrow', 'ClosedCurve', 'Sector', 'StraightArrow', 'DiagonalArrow', 'DoveTailDiagonalArrow',
-            'Point', 'ArcCurve', 'BoxZoom', 'FreeHandCircle', 'FreeHandEllipse', 'FreeHandLineString',
-            'FreeHandRectangle', 'FreeHandPolygon', 'Rectangle', 'Polygon', 'LineString', 'Circle',
-            'QuadBezierCurve', 'CubicBezierCurve', 'GatheringPlace'
-        ].map(function (value) {
+        var items = ['GatheringPlace'].map(function (value) {
             return {
                 item: value,
                 click: function () {
