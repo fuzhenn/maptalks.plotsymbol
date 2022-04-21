@@ -2213,6 +2213,165 @@ DrawTool.registerMode('Sector', {
     }
 });
 
-export { StraightArrow, DiagonalArrow, DoveTailDiagonalArrow, DoubleArrow, ClosedCurve, Sector };
+var GatheringPlace = function (_InterpolationGeometr) {
+    inherits(GatheringPlace, _InterpolationGeometr);
+
+    function GatheringPlace(coordinates) {
+        var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+        classCallCheck(this, GatheringPlace);
+
+        var _this = possibleConstructorReturn(this, _InterpolationGeometr.call(this, coordinates, options));
+
+        _this.type = 'GatheringPlace';
+        _this._offset = 0.4;
+        if (coordinates) {
+            _this.setCoordinates(coordinates);
+        }
+        return _this;
+    }
+
+    GatheringPlace.prototype.getPlotType = function getPlotType() {
+        return this.type;
+    };
+
+    GatheringPlace.prototype._generate = function _generate() {
+        var coordinates = this.getCoordinates();
+        var count = coordinates.length;
+        var _points = Coordinate.toNumberArrays(coordinates);
+        if (count < 2) return;
+        if (count === 2) {
+            var _mid = Mid(_points[0], _points[1]);
+            var distance = MathDistance(_points[0], _mid) / 0.9;
+            var pnt = getThirdPoint(_points[0], _mid, HALF_PI, distance, true);
+            _points = [_points[0], pnt, _points[1]];
+        }
+        var mid = Mid(_points[0], _points[2]);
+        _points.push(mid, _points[0], _points[1]);
+        var normals = [],
+            pnt1 = undefined,
+            pnt2 = undefined,
+            pnt3 = undefined,
+            pList = [];
+
+        for (var i = 0; i < _points.length - 2; i++) {
+            pnt1 = _points[i];
+            pnt2 = _points[i + 1];
+            pnt3 = _points[i + 2];
+            var normalPoints = getBisectorNormals(this._offset, pnt1, pnt2, pnt3);
+            normals = normals.concat(normalPoints);
+        }
+        count = normals.length;
+        normals = [normals[count - 1]].concat(normals.slice(0, count - 1));
+        for (var _i = 0; _i < _points.length - 2; _i++) {
+            pnt1 = _points[_i];
+            pnt2 = _points[_i + 1];
+            pList.push(pnt1);
+            for (var t = 0; t <= FITTING_COUNT; t++) {
+                var _pnt = getCubicValue(t / FITTING_COUNT, pnt1, normals[_i * 2], normals[_i * 2 + 1], pnt2);
+                pList.push(_pnt);
+            }
+            pList.push(pnt2);
+        }
+
+        pList = pList.map(function (p) {
+            return new Coordinate(p);
+        });
+        return pList;
+    };
+
+    GatheringPlace.prototype._exportGeoJSONGeometry = function _exportGeoJSONGeometry() {
+        var coordinates = Coordinate.toNumberArrays([this.getShell()]);
+        return {
+            'type': 'Polygon',
+            'coordinates': coordinates
+        };
+    };
+
+    GatheringPlace.prototype._toJSON = function _toJSON(options) {
+        var opts = Util.extend({}, options);
+        var coordinates = this.getCoordinates();
+        opts.geometry = false;
+        var feature = this.toGeoJSON(opts);
+        feature['geometry'] = {
+            'type': 'Polygon'
+        };
+        return {
+            'feature': feature,
+            'subType': 'GatheringPlace',
+            'coordinates': coordinates
+        };
+    };
+
+    GatheringPlace.fromJSON = function fromJSON(json) {
+        var feature = json['feature'];
+        var _atheringPlace = new GatheringPlace(json['coordinates'], json['options']);
+        _atheringPlace.setProperties(feature['properties']);
+        return _atheringPlace;
+    };
+
+    return GatheringPlace;
+}(InterpolationGeometry);
+
+GatheringPlace.registerJSONType('GatheringPlace');
+
+DrawTool.registerMode('GatheringPlace', {
+    action: ['click', 'mousemove', 'dblclick'],
+    create: function create(projection, prjPath) {
+        var path = prjPath.map(function (c) {
+            return projection.unproject(c);
+        });
+        var line = new GatheringPlace(path);
+        line._setPrjCoordinates(prjPath);
+        return line;
+    },
+    update: function update(projection, path, geometry) {
+        var symbol = geometry.getSymbol();
+        var prjCoords = void 0;
+        if (Array.isArray(path)) {
+            prjCoords = path;
+        } else {
+            prjCoords = geometry._getPrjCoordinates();
+            prjCoords.push(path);
+        }
+        var coordinates = prjCoords.map(function (c) {
+            return projection.unproject(c);
+        });
+        geometry.setCoordinates(coordinates);
+        geometry._setPrjCoordinates(prjCoords);
+
+        var layer = geometry.getLayer();
+        if (layer) {
+            var doublearrow = layer.getGeometryById('gatheringplace');
+            if (!doublearrow && path.length >= 3) {
+                doublearrow = new GatheringPlace([path], {
+                    'id': 'gatheringplace'
+                });
+                doublearrow.addTo(layer);
+                if (symbol) {
+                    doublearrow.setSymbol(symbol);
+                }
+                geometry.updateSymbol({
+                    lineOpacity: 0
+                });
+            }
+            if (doublearrow) {
+                doublearrow.setCoordinates(coordinates);
+                doublearrow._setPrjCoordinates(path);
+                geometry.updateSymbol({
+                    lineOpacity: 0
+                });
+            }
+        }
+    },
+    generate: function generate(geometry) {
+        var symbol = geometry.getSymbol();
+        symbol.lineOpacity = 1;
+        return new GatheringPlace(geometry.getCoordinates(), {
+            'symbol': symbol
+        });
+    }
+});
+
+export { StraightArrow, DiagonalArrow, DoveTailDiagonalArrow, DoubleArrow, ClosedCurve, Sector, GatheringPlace };
 
 typeof console !== 'undefined' && console.log('maptalks.plotsymbol v0.6.0, requires maptalks@>=0.44.1.');
