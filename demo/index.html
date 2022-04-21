@@ -15,6 +15,7 @@
             height: 100%;
             width: 100%;
         }
+
     </style>
 </head>
 
@@ -57,7 +58,11 @@
             });
         });
 
-        var items = ['DoubleArrow', 'ClosedCurve', 'Sector', 'StraightArrow', 'DiagonalArrow', 'DoveTailDiagonalArrow', 'Point', 'ArcCurve', 'BoxZoom', 'FreeHandCircle', 'FreeHandEllipse', 'FreeHandLineString', 'FreeHandRectangle', 'FreeHandPolygon', 'Rectangle', 'Polygon', 'LineString', 'Circle', 'QuadBezierCurve', 'CubicBezierCurve'].map(function (value) {
+        var items = ['DoubleArrow', 'ClosedCurve', 'Sector', 'StraightArrow', 'DiagonalArrow', 'DoveTailDiagonalArrow',
+            'Point', 'ArcCurve', 'BoxZoom', 'FreeHandCircle', 'FreeHandEllipse', 'FreeHandLineString',
+            'FreeHandRectangle', 'FreeHandPolygon', 'Rectangle', 'Polygon', 'LineString', 'Circle',
+            'QuadBezierCurve', 'CubicBezierCurve', 'GatheringPlace'
+        ].map(function (value) {
             return {
                 item: value,
                 click: function () {
@@ -67,8 +72,7 @@
         });
 
         var toolbar = new maptalks.control.Toolbar({
-            items: [
-                {
+            items: [{
                     item: 'Shape',
                     children: items
                 },
