@@ -1,10 +1,7 @@
 /*!
- * maptalks.plotsymbol v0.6.0
+ * maptalks.plotsymbol v0.6.1
  * LICENSE : MIT
  * (c) 2016-2022 maptalks.org
- */
-/*!
- * requires maptalks@>=0.44.1 
  */
 (function (global, factory) {
 	typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('maptalks')) :
@@ -2226,6 +2223,6 @@ exports.Sector = Sector;
 
 Object.defineProperty(exports, '__esModule', { value: true });
 
-typeof console !== 'undefined' && console.log('maptalks.plotsymbol v0.6.0, requires maptalks@>=0.44.1.');
+typeof console !== 'undefined' && console.log('maptalks.plotsymbol v0.6.1');
 
 })));
