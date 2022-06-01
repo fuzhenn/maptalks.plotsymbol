@@ -1,0 +1,153 @@
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Map tools - Draw tool to draw geometries</title>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no, width=device-width">
+    <link type="text/css" rel="stylesheet" href="../node_modules/maptalks/dist/maptalks.css">
+    <script type="text/javascript" src="../node_modules/maptalks/dist/maptalks.js"></script>
+    <script src="../dist/maptalks.plotsymbol.js"></script>
+    <style>
+        html,
+        body {
+            margin: 0px;
+            height: 100%;
+            width: 100%;
+        }
+
+    </style>
+</head>
+
+<body>
+    <div id="map" style="width:100%; height:100%;"></div>
+    <script>
+        let tilelayer = new maptalks.TileLayer('baseMap', {
+            urlTemplate: `http://online2.map.bdimg.com/tile/?qt=vtile&x={x}&y={y}&z={z}&styles=pl&scaler=1&udt=20190704`,
+            subdomains: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+        })
+        var map = new maptalks.Map('map', {
+            center: [121.23023, 28.69566],
+            zoom: 13,
+            view: {
+                projection: 'baidu',
+            },
+            seamlessZoom: false,
+            attribution: false,
+            baseLayer: tilelayer
+        });
+        var layer = new maptalks.VectorLayer('vector', {
+            enableSimplify: false
+        }).addTo(map);
+
+        // map.on('click', function (param) {
+        //     console.log(param.coordinate);
+        // });
+
+        var drawTool = new maptalks.DrawTool({
+            mode: 'Point',
+            symbol: {
+                'lineColor': '#e84',
+                //lineDasharray: [10, 10],
+                'polygonFill': '#f00',
+                'polygonOpacity': 1,
+            }
+        }).addTo(map).disable();
+
+        var menuoptions = {
+            'items': [{
+                    item: '开始编辑',
+                    click: (e) => {
+                        e.owner.startEdit();
+                        console.log(e);
+                    }
+                },
+                '-',
+                {
+                    item: '结束编辑',
+                    click: (e) => {
+                        console.log(e)
+                        e.owner.endEdit();
+                    }
+                }
+            ]
+        };
+
+        drawTool.on('drawend', function (param) {
+            drawTool.disable();
+            var geometry = param.geometry;
+            layer.addGeometry(geometry);
+            geometry.updateSymbol({
+                'lineColor': ' #FF0000',
+                'polygonFill': '#ff0'
+            });
+            geometry.on('dblclick', e => {
+                console.log(e)
+                e.target.startEdit();
+            });
+            geometry.setMenu(menuoptions);
+        });
+
+        var items = ['GatheringPlace'].map(function (value) {
+            return {
+                item: value,
+                click: function () {
+                    drawTool.setMode(value).enable();
+                }
+            };
+        });
+
+        var toolbar = new maptalks.control.Toolbar({
+            items: [{
+                    item: 'Shape',
+                    children: items
+                },
+                {
+                    item: 'Disable',
+                    click: function () {
+                        drawTool.disable();
+                    }
+                },
+                {
+                    item: 'Clear',
+                    click: function () {
+                        layer.clear();
+                    }
+                }
+            ]
+        }).addTo(map);
+        //态势线的填充样式，可以自定义线颜色，线宽，线的间隔
+        function drawFillStyle(lineColor, lineWidth, spacing) {
+            var color = lineColor || '#ccc';
+            var width = lineWidth || 1.0;
+            var space = spacing || 15;
+            var canvas = document.createElement('canvas');
+            canvas.width = spacing * 3 + lineWidth;
+            canvas.height = spacing * 3 + lineWidth;
+            return drawGrid(canvas, color, width, spacing, spacing);
+        }
+
+        function drawGrid(canvas, color, lineWidth, stepx, stepy) {
+            var context = canvas.getContext("2d");
+            context.strokeStyle = color;
+            context.lineWidth = lineWidth;
+            for (var i = stepx + 0.5; i < context.canvas.width; i += stepx) {
+                context.beginPath();
+                context.moveTo(i, 0);
+                context.lineTo(i, context.canvas.height);
+                context.stroke();
+            }
+
+            for (var i = stepy + 0.5; i < context.canvas.height; i += stepy) {
+                context.beginPath();
+                context.moveTo(0, i);
+                context.lineTo(context.canvas.width, i);
+                context.stroke();
+            }
+            const data = canvas.toDataURL('image/png', 1);
+            return data;
+        }
+
+    </script>
+</body>
+
+</html>
