@@ -43,7 +43,7 @@
     "maptalks": "<2.0.0",
     "maptalks-build-helpers": "^0.4.3",
     "minimist": "^1.2.0",
-    "mocha": "^2.4.5"
+    "mocha": "^10.1.0"
   },
   "dependencies": {
     "point-geometry": "^0.1.0"
