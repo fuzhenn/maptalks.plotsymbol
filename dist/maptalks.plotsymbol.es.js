@@ -1,7 +1,7 @@
 /*!
- * maptalks.plotsymbol v0.7.0
+ * maptalks.plotsymbol v0.8.0
  * LICENSE : MIT
- * (c) 2016-2022 maptalks.org
+ * (c) 2016-2024 maptalks.org
  */
 import { Canvas, Coordinate, Curve, DrawTool, LineString, Point, Util } from 'maptalks';
 
@@ -2059,7 +2059,7 @@ var Sector = function (_InterprolationGeomet) {
 
         var _this = possibleConstructorReturn(this, _InterprolationGeomet.call(this, coordinates, options));
 
-        _this.type = 'Sector';
+        _this.type = 'PlotSector';
         if (coordinates) {
             _this.setCoordinates(coordinates);
         }
@@ -2129,7 +2129,7 @@ var Sector = function (_InterprolationGeomet) {
         };
         return {
             'feature': feature,
-            'subType': 'Sector',
+            'subType': 'PlotSector',
             'coordinates': coordinates
         };
     };
@@ -2144,9 +2144,9 @@ var Sector = function (_InterprolationGeomet) {
     return Sector;
 }(InterpolationGeometry);
 
-Sector.registerJSONType('Sector');
+Sector.registerJSONType('PlotSector');
 
-DrawTool.registerMode('Sector', {
+DrawTool.registerMode('PlotSector', {
     action: ['click', 'mousemove', 'dblclick'],
     create: function create(projection, prjPath) {
         var path = prjPath.map(function (c) {
@@ -2371,4 +2371,4 @@ DrawTool.registerMode('GatheringPlace', {
 
 export { StraightArrow, DiagonalArrow, DoveTailDiagonalArrow, DoubleArrow, ClosedCurve, Sector, GatheringPlace };
 
-typeof console !== 'undefined' && console.log('maptalks.plotsymbol v0.7.0');
+typeof console !== 'undefined' && console.log('maptalks.plotsymbol v0.8.0');

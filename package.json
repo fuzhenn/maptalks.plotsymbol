@@ -1,6 +1,6 @@
 {
   "name": "maptalks.plotsymbol",
-  "version": "0.7.0",
+  "version": "0.8.0",
   "description": "A maptalks plugin to support plot symbols, e.g. DoubleArrow, ClosedCurve, DiagonalArrow, StraightArrow, etc.",
   "license": "MIT",
   "repository": {
