@@ -5,7 +5,7 @@ import { getSectorPoints, pointDistance, getAzimuth } from '../PlotUtils';
 class Sector extends InterprolationGeometry {
     constructor(coordinates, options = {}) {
         super(coordinates, options);
-        this.type = 'Sector';
+        this.type = 'PlotSector';
         if (coordinates) {
             this.setCoordinates(coordinates);
         }
@@ -66,7 +66,7 @@ class Sector extends InterprolationGeometry {
         };
         return {
             'feature': feature,
-            'subType': 'Sector',
+            'subType': 'PlotSector',
             'coordinates': coordinates
         };
     }
@@ -79,9 +79,9 @@ class Sector extends InterprolationGeometry {
     }
 }
 
-Sector.registerJSONType('Sector');
+Sector.registerJSONType('PlotSector');
 
-DrawTool.registerMode('Sector', {
+DrawTool.registerMode('PlotSector', {
     action: ['click', 'mousemove', 'dblclick'],
     create(projection, prjPath) {
         const path = prjPath.map(c => projection.unproject(c));
