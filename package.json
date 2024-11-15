@@ -2,50 +2,39 @@
   "name": "maptalks.plotsymbol",
   "version": "0.8.0",
   "description": "A maptalks plugin to support plot symbols, e.g. DoubleArrow, ClosedCurve, DiagonalArrow, StraightArrow, etc.",
-  "license": "MIT",
   "repository": {
     "type": "git",
     "url": "https://github.com/maptalks/maptalks.plotsymbol.git"
   },
+  "license": "MIT",
+  "exports": {
+    ".": {
+      "import": "./dist/maptalks.plotsymbol.es.js",
+      "require": "./dist/maptalks.plotsymbol.js"
+    }
+  },
   "main": "dist/maptalks.plotsymbol.js",
   "module": "dist/maptalks.plotsymbol.es.js",
   "jsnext:main": "dist/maptalks.plotsymbol.es.js",
+  "files": [
+    "dist"
+  ],
   "scripts": {
-    "preversion": "npm test",
-    "version": "gulp minify && git add -A dist",
+    "build": "rslib build",
+    "dev": "gulp watch",
     "lint": "eslint index.js test/**/*.js",
-    "test": "gulp test",
-    "pretest": "npm run lint",
     "prepublish": "npm run lint && gulp minify",
-    "build": "gulp build",
-    "dev": "gulp watch"
+    "pretest": "npm run lint",
+    "test": "gulp test",
+    "preversion": "npm test",
+    "version": "gulp minify && git add -A dist"
   },
+  "dependencies": {},
   "devDependencies": {
-    "babel-eslint": "^7.1.1",
-    "babel-plugin-external-helpers": "^6.22.0",
-    "babel-preset-es2015": "^6.18.0",
-    "eslint": "^2.4.0",
-    "eslint-config-maptalks": "^0.4.0",
-    "eslint-plugin-mocha": "^4.8.0",
-    "expect-maptalks": "^0.2.5",
-    "expect.js": "^0.3.1",
+    "@mapbox/point-geometry": "^1.1.0",
+    "@rslib/core": "^0.0.18",
+    "es-toolkit": "^1.27.0",
     "gulp": "^4.0.0",
-    "happen": "^0.3.1",
-    "karma": "^1.3.0",
-    "karma-chrome-launcher": "^2.0.0",
-    "karma-expect": "^1.1.3",
-    "karma-expect-maptalks": "^0.1.4",
-    "karma-firefox-launcher": "^1.0.0",
-    "karma-happen": "^0.1.0",
-    "karma-ie-launcher": "^1.0.0",
-    "karma-mocha": "^1.3.0",
-    "karma-mocha-reporter": "^2.2.1",
-    "maptalks": "<2.0.0",
-    "maptalks-build-helpers": "^0.4.3",
-    "minimist": "^1.2.0",
-    "mocha": "^2.4.5"
-  },
-  "dependencies": {
-    "point-geometry": "^0.1.0"
+    "maptalks": "<2.0.0"
   }
 }

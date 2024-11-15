@@ -1,5 +1,5 @@
 import * as maptalks from 'maptalks';
-import Point from 'point-geometry';
+import Point from '@mapbox/point-geometry';
 import { getArrowBody, paintSmoothLine } from '../PlotUtils';
 
 /**

@@ -1,6 +1,6 @@
 import * as maptalks from 'maptalks';
 import DiagonalArrow from './DiagonalArrow';
-import Point from 'point-geometry';
+import Point from '@mapbox/point-geometry';
 
 /**
  * @property {Object} options
