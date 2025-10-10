@@ -1,7 +1,7 @@
 /*!
- * maptalks.plotsymbol v0.8.0
+ * maptalks.plotsymbol v0.8.1
  * LICENSE : MIT
- * (c) 2016-2024 maptalks.org
+ * (c) 2016-2025 maptalks.org
  */
 import { Canvas, Coordinate, Curve, DrawTool, LineString, Point, Util } from 'maptalks';
 
@@ -2369,6 +2369,6 @@ DrawTool.registerMode('GatheringPlace', {
     }
 });
 
-export { StraightArrow, DiagonalArrow, DoveTailDiagonalArrow, DoubleArrow, ClosedCurve, Sector, GatheringPlace };
+export { StraightArrow, DiagonalArrow, DoveTailDiagonalArrow, DoubleArrow, ClosedCurve, Sector as PlotSector, GatheringPlace };
 
-typeof console !== 'undefined' && console.log('maptalks.plotsymbol v0.8.0');
+typeof console !== 'undefined' && console.log('maptalks.plotsymbol v0.8.1');

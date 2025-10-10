@@ -1,7 +1,7 @@
 /*!
- * maptalks.plotsymbol v0.8.0
+ * maptalks.plotsymbol v0.8.1
  * LICENSE : MIT
- * (c) 2016-2024 maptalks.org
+ * (c) 2016-2025 maptalks.org
  */
 (function (global, factory) {
 	typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('maptalks')) :
@@ -2378,11 +2378,11 @@ exports.DiagonalArrow = DiagonalArrow;
 exports.DoveTailDiagonalArrow = DoveTailDiagonalArrow;
 exports.DoubleArrow = DoubleArrow;
 exports.ClosedCurve = ClosedCurve;
-exports.Sector = Sector;
+exports.PlotSector = Sector;
 exports.GatheringPlace = GatheringPlace;
 
 Object.defineProperty(exports, '__esModule', { value: true });
 
-typeof console !== 'undefined' && console.log('maptalks.plotsymbol v0.8.0');
+typeof console !== 'undefined' && console.log('maptalks.plotsymbol v0.8.1');
 
 })));
